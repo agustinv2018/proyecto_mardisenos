@@ -665,6 +665,24 @@
   CONSTRAINT `tickets_soporte_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8</sql_create_table>
 </table>
+<table name="archivos" view="colnames">
+<left>334</left>
+<top>183</top>
+<width>42</width>
+<height>59</height>
+<sql_create_table>CREATE TABLE `archivos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(255) NOT NULL,
+  `tipo` varchar(100) DEFAULT NULL,
+  `tamano` int(11) DEFAULT NULL,
+  `ubicacion` varchar(255) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
+  `fecha_subida` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `usuario_id` (`usuario_id`),
+  CONSTRAINT `archivos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8</sql_create_table>
+</table>
 </tables>
 </canvas>
 </schemadesigner>

@@ -1,760 +1,3110 @@
-/*
-SQLyog Ultimate v12.09 (32 bit)
-MySQL - 10.4.24-MariaDB : Database - proyecto
-*********************************************************************
-*/
-
-/*!40101 SET NAMES utf8 */;
-
-/*!40101 SET SQL_MODE=''*/;
-
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`proyecto` /*!40100 DEFAULT CHARACTER SET utf8 */;
-
-USE `proyecto`;
-
-/*Table structure for table `cadeterias` */
-
-DROP TABLE IF EXISTS `cadeterias`;
-
-CREATE TABLE `cadeterias` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `cadeterias` */
-
-/*Table structure for table `categorias_configuracion` */
-
-DROP TABLE IF EXISTS `categorias_configuracion`;
-
-CREATE TABLE `categorias_configuracion` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `categorias_configuracion` */
-
-/*Table structure for table `clientes` */
-
-DROP TABLE IF EXISTS `clientes`;
-
-CREATE TABLE `clientes` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  `tipo` varchar(50) NOT NULL,
-  `direccion` text DEFAULT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
-  `correo` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `clientes` */
-
-/*Table structure for table `colores` */
-
-DROP TABLE IF EXISTS `colores`;
-
-CREATE TABLE `colores` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `colores` */
-
-/*Table structure for table `comentarios` */
-
-DROP TABLE IF EXISTS `comentarios`;
-
-CREATE TABLE `comentarios` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `producto_id` int(11) NOT NULL,
-  `texto` text NOT NULL,
-  `fecha_hora` datetime NOT NULL,
-  `fecha_modificacion` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  KEY `producto_id` (`producto_id`),
-  CONSTRAINT `comentarios_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `comentarios_ibfk_2` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `comentarios` */
-
-/*Table structure for table `configuracion_categoria` */
-
-DROP TABLE IF EXISTS `configuracion_categoria`;
-
-CREATE TABLE `configuracion_categoria` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `configuracion_id` int(11) NOT NULL,
-  `categoria_configuracion_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `configuracion_id` (`configuracion_id`),
-  KEY `categoria_configuracion_id` (`categoria_configuracion_id`),
-  CONSTRAINT `configuracion_categoria_ibfk_1` FOREIGN KEY (`configuracion_id`) REFERENCES `configuracion_sistema` (`id`),
-  CONSTRAINT `configuracion_categoria_ibfk_2` FOREIGN KEY (`categoria_configuracion_id`) REFERENCES `categorias_configuracion` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `configuracion_categoria` */
-
-/*Table structure for table `configuracion_historial_contrasenas` */
-
-DROP TABLE IF EXISTS `configuracion_historial_contrasenas`;
-
-CREATE TABLE `configuracion_historial_contrasenas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `maximo_registros` int(11) DEFAULT NULL,
-  `longitud_minima` int(11) DEFAULT NULL,
-  `periodo_almacenamiento` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  CONSTRAINT `configuracion_historial_contrasenas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `configuracion_historial_contrasenas` */
-
-/*Table structure for table `configuracion_permiso` */
-
-DROP TABLE IF EXISTS `configuracion_permiso`;
-
-CREATE TABLE `configuracion_permiso` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `configuracion_sistema_id` int(11) NOT NULL,
-  `permiso_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `configuracion_sistema_id` (`configuracion_sistema_id`),
-  KEY `permiso_id` (`permiso_id`),
-  CONSTRAINT `configuracion_permiso_ibfk_1` FOREIGN KEY (`configuracion_sistema_id`) REFERENCES `configuracion_sistema` (`id`),
-  CONSTRAINT `configuracion_permiso_ibfk_2` FOREIGN KEY (`permiso_id`) REFERENCES `permisos` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `configuracion_permiso` */
-
-/*Table structure for table `configuracion_rol` */
-
-DROP TABLE IF EXISTS `configuracion_rol`;
-
-CREATE TABLE `configuracion_rol` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `configuracion_sistema_id` int(11) NOT NULL,
-  `rol_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `configuracion_sistema_id` (`configuracion_sistema_id`),
-  KEY `rol_id` (`rol_id`),
-  CONSTRAINT `configuracion_rol_ibfk_1` FOREIGN KEY (`configuracion_sistema_id`) REFERENCES `configuracion_sistema` (`id`),
-  CONSTRAINT `configuracion_rol_ibfk_2` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `configuracion_rol` */
-
-/*Table structure for table `configuracion_sistema` */
-
-DROP TABLE IF EXISTS `configuracion_sistema`;
-
-CREATE TABLE `configuracion_sistema` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  `version` varchar(100) NOT NULL,
-  `descripcion` varchar(100) NOT NULL,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp(),
-  `fecha_modificacion` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `configuracion_sistema` */
-
-/*Table structure for table `configuracion_usuario` */
-
-DROP TABLE IF EXISTS `configuracion_usuario`;
-
-CREATE TABLE `configuracion_usuario` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `configuracion_sistema_id` int(11) NOT NULL,
-  `usuario_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `configuracion_sistema_id` (`configuracion_sistema_id`),
-  KEY `usuario_id` (`usuario_id`),
-  CONSTRAINT `configuracion_usuario_ibfk_1` FOREIGN KEY (`configuracion_sistema_id`) REFERENCES `configuracion_sistema` (`id`),
-  CONSTRAINT `configuracion_usuario_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `configuracion_usuario` */
-
-/*Table structure for table `consultas` */
-
-DROP TABLE IF EXISTS `consultas`;
-
-CREATE TABLE `consultas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `producto_id` int(11) NOT NULL,
-  `descripcion` varchar(300) NOT NULL,
-  `fecha_consulta` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  KEY `producto_id` (`producto_id`),
-  CONSTRAINT `consultas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `consultas_ibfk_2` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `consultas` */
-
-/*Table structure for table `contactos` */
-
-DROP TABLE IF EXISTS `contactos`;
-
-CREATE TABLE `contactos` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `cliente_id` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `puesto` varchar(50) DEFAULT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
-  `correo` varchar(100) DEFAULT NULL,
-  `usuario_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `cliente_id` (`cliente_id`),
-  KEY `usuario_id` (`usuario_id`),
-  CONSTRAINT `contactos_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`),
-  CONSTRAINT `contactos_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `contactos` */
-
-/*Table structure for table `detalle_pedido` */
-
-DROP TABLE IF EXISTS `detalle_pedido`;
-
-CREATE TABLE `detalle_pedido` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `pedido_id` int(11) NOT NULL,
-  `fecha_creacion_pedido` datetime NOT NULL DEFAULT current_timestamp(),
-  `estado` varchar(20) NOT NULL,
-  `direccion_envio` varchar(260) NOT NULL,
-  `informacion_pago` int(11) NOT NULL,
-  `fecha_modificacion` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  KEY `pedido_id` (`pedido_id`),
-  CONSTRAINT `detalle_pedido_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `detalle_pedido_ibfk_2` FOREIGN KEY (`pedido_id`) REFERENCES `pedidos` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `detalle_pedido` */
-
-/*Table structure for table `detalle_producto` */
-
-DROP TABLE IF EXISTS `detalle_producto`;
-
-CREATE TABLE `detalle_producto` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `producto_id` int(11) NOT NULL,
-  `color_id` int(11) NOT NULL,
-  `talla_id` int(11) NOT NULL,
-  `diseno_id` int(11) NOT NULL,
-  `tela_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `producto_id` (`producto_id`),
-  KEY `color_id` (`color_id`),
-  KEY `talla_id` (`talla_id`),
-  KEY `diseno_id` (`diseno_id`),
-  KEY `tela_id` (`tela_id`),
-  CONSTRAINT `detalle_producto_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`),
-  CONSTRAINT `detalle_producto_ibfk_2` FOREIGN KEY (`color_id`) REFERENCES `colores` (`id`),
-  CONSTRAINT `detalle_producto_ibfk_3` FOREIGN KEY (`talla_id`) REFERENCES `tallas` (`id`),
-  CONSTRAINT `detalle_producto_ibfk_4` FOREIGN KEY (`diseno_id`) REFERENCES `disenos` (`id`),
-  CONSTRAINT `detalle_producto_ibfk_5` FOREIGN KEY (`tela_id`) REFERENCES `telas` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `detalle_producto` */
-
-/*Table structure for table `disenos` */
-
-DROP TABLE IF EXISTS `disenos`;
-
-CREATE TABLE `disenos` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `disenos` */
-
-/*Table structure for table `envios` */
-
-DROP TABLE IF EXISTS `envios`;
-
-CREATE TABLE `envios` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `fecha_envio` datetime NOT NULL,
-  `direccion_entrega` text NOT NULL,
-  `cliente_id` int(11) NOT NULL,
-  `cadeteria_id` int(11) DEFAULT NULL,
-  `estado` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `cliente_id` (`cliente_id`),
-  KEY `cadeteria_id` (`cadeteria_id`),
-  CONSTRAINT `envios_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`),
-  CONSTRAINT `envios_ibfk_2` FOREIGN KEY (`cadeteria_id`) REFERENCES `cadeterias` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `envios` */
-
-/*Table structure for table `historial_contrasenas` */
-
-DROP TABLE IF EXISTS `historial_contrasenas`;
-
-CREATE TABLE `historial_contrasenas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `contrasenas_hasheada` varchar(255) NOT NULL,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  CONSTRAINT `historial_contrasenas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `historial_contrasenas` */
-
-/*Table structure for table `interacciones_soporte` */
-
-DROP TABLE IF EXISTS `interacciones_soporte`;
-
-CREATE TABLE `interacciones_soporte` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `ticket_id` int(11) NOT NULL,
-  `agente_soporte_id` int(11) NOT NULL,
-  `mensaje` text NOT NULL,
-  `fecha_hora` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `ticket_id` (`ticket_id`),
-  KEY `agente_soporte_id` (`agente_soporte_id`),
-  CONSTRAINT `interacciones_soporte_ibfk_1` FOREIGN KEY (`ticket_id`) REFERENCES `tickets_soporte` (`id`),
-  CONSTRAINT `interacciones_soporte_ibfk_2` FOREIGN KEY (`agente_soporte_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `interacciones_soporte` */
-
-/*Table structure for table `jerarquia_usuarios` */
-
-DROP TABLE IF EXISTS `jerarquia_usuarios`;
-
-CREATE TABLE `jerarquia_usuarios` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `jefe_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  KEY `jefe_id` (`jefe_id`),
-  CONSTRAINT `jerarquia_usuarios_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `jerarquia_usuarios_ibfk_2` FOREIGN KEY (`jefe_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `jerarquia_usuarios` */
-
-/*Table structure for table `notificaciones` */
-
-DROP TABLE IF EXISTS `notificaciones`;
-
-CREATE TABLE `notificaciones` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `mensaje` varchar(400) NOT NULL,
-  `fecha_hora` timestamp NOT NULL DEFAULT current_timestamp(),
-  `leida` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  CONSTRAINT `notificaciones_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `notificaciones` */
-
-/*Table structure for table `notificaciones_tipo` */
-
-DROP TABLE IF EXISTS `notificaciones_tipo`;
-
-CREATE TABLE `notificaciones_tipo` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `notificaciones_id` int(11) NOT NULL,
-  `tipo_notificacion_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `notificaciones_id` (`notificaciones_id`),
-  KEY `tipo_notificacion_id` (`tipo_notificacion_id`),
-  CONSTRAINT `notificaciones_tipo_ibfk_1` FOREIGN KEY (`notificaciones_id`) REFERENCES `notificaciones` (`id`),
-  CONSTRAINT `notificaciones_tipo_ibfk_2` FOREIGN KEY (`tipo_notificacion_id`) REFERENCES `tipo_notificacion` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `notificaciones_tipo` */
-
-/*Table structure for table `pedidos` */
-
-DROP TABLE IF EXISTS `pedidos`;
-
-CREATE TABLE `pedidos` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `producto_id` int(11) NOT NULL,
-  `usuario_id` int(11) NOT NULL,
-  `cantidad` int(11) DEFAULT NULL,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp(),
-  `fecha_modificacion` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `producto_id` (`producto_id`),
-  KEY `usuario_id` (`usuario_id`),
-  CONSTRAINT `pedidos_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`),
-  CONSTRAINT `pedidos_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `pedidos` */
-
-/*Table structure for table `permisos` */
-
-DROP TABLE IF EXISTS `permisos`;
-
-CREATE TABLE `permisos` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  `descripcion` varchar(200) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `permisos` */
-
-/*Table structure for table `productos` */
-
-DROP TABLE IF EXISTS `productos`;
-
-CREATE TABLE `productos` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  `descripcion` varchar(100) NOT NULL,
-  `tiempo_confeccion_horas` int(11) NOT NULL,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp(),
-  `fecha_modificacion` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `productos` */
-
-/*Table structure for table `productos_promocionados` */
-
-DROP TABLE IF EXISTS `productos_promocionados`;
-
-CREATE TABLE `productos_promocionados` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `producto_id` int(11) NOT NULL,
-  `promocion_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `producto_id` (`producto_id`),
-  KEY `promocion_id` (`promocion_id`),
-  CONSTRAINT `productos_promocionados_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`),
-  CONSTRAINT `productos_promocionados_ibfk_2` FOREIGN KEY (`promocion_id`) REFERENCES `promociones` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `productos_promocionados` */
-
-/*Table structure for table `promociones` */
-
-DROP TABLE IF EXISTS `promociones`;
-
-CREATE TABLE `promociones` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  `descripcion` text DEFAULT NULL,
-  `fecha_inicio` date NOT NULL,
-  `fecha_fin` date NOT NULL,
-  `descuento` decimal(10,2) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `promociones` */
-
-/*Table structure for table `registro_actividad` */
-
-DROP TABLE IF EXISTS `registro_actividad`;
-
-CREATE TABLE `registro_actividad` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `accion_id` int(11) NOT NULL,
-  `descripcion` varchar(60) DEFAULT NULL,
-  `fecha_hora` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  KEY `accion_id` (`accion_id`),
-  CONSTRAINT `registro_actividad_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `registro_actividad_ibfk_2` FOREIGN KEY (`accion_id`) REFERENCES `tipo_accion` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `registro_actividad` */
-
-/*Table structure for table `registro_errores` */
-
-DROP TABLE IF EXISTS `registro_errores`;
-
-CREATE TABLE `registro_errores` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) DEFAULT NULL,
-  `descripcion` text NOT NULL,
-  `fecha_hora` datetime NOT NULL DEFAULT current_timestamp(),
-  `fecha_modificacion` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  CONSTRAINT `registro_errores_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `registro_errores` */
-
-/*Table structure for table `registro_usuario` */
-
-DROP TABLE IF EXISTS `registro_usuario`;
-
-CREATE TABLE `registro_usuario` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `nombre` varchar(260) NOT NULL,
-  `apellido` varchar(260) NOT NULL,
-  `fecha_nac` date NOT NULL,
-  `mail` varchar(60) NOT NULL,
-  `contrasena` varchar(260) NOT NULL,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp(),
-  `fecha_modificacion` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  CONSTRAINT `registro_usuario_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `registro_usuario` */
-
-/*Table structure for table `registros_cambio_contrasena` */
-
-DROP TABLE IF EXISTS `registros_cambio_contrasena`;
-
-CREATE TABLE `registros_cambio_contrasena` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `contrasena_nueva_hasheada` varchar(255) NOT NULL,
-  `fecha_creacion` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  CONSTRAINT `registros_cambio_contrasena_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `registros_cambio_contrasena` */
-
-/*Table structure for table `roles` */
-
-DROP TABLE IF EXISTS `roles`;
-
-CREATE TABLE `roles` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(60) NOT NULL,
-  `descripcion` varchar(260) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `roles` */
-
-/*Table structure for table `roles_permisos` */
-
-DROP TABLE IF EXISTS `roles_permisos`;
-
-CREATE TABLE `roles_permisos` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `rol_id` int(11) NOT NULL,
-  `permiso_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `rol_id` (`rol_id`),
-  KEY `permiso_id` (`permiso_id`),
-  CONSTRAINT `roles_permisos_ibfk_1` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`),
-  CONSTRAINT `roles_permisos_ibfk_2` FOREIGN KEY (`permiso_id`) REFERENCES `permisos` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `roles_permisos` */
-
-/*Table structure for table `roles_usuarios` */
-
-DROP TABLE IF EXISTS `roles_usuarios`;
-
-CREATE TABLE `roles_usuarios` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `rol_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  KEY `rol_id` (`rol_id`),
-  CONSTRAINT `roles_usuarios_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `roles_usuarios_ibfk_2` FOREIGN KEY (`rol_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `roles_usuarios` */
-
-/*Table structure for table `tallas` */
-
-DROP TABLE IF EXISTS `tallas`;
-
-CREATE TABLE `tallas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `tallas` */
-
-/*Table structure for table `telas` */
-
-DROP TABLE IF EXISTS `telas`;
-
-CREATE TABLE `telas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `telas` */
-
-/*Table structure for table `tickets_soporte` */
-
-DROP TABLE IF EXISTS `tickets_soporte`;
-
-CREATE TABLE `tickets_soporte` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `asunto` varchar(255) NOT NULL,
-  `descripcion` text NOT NULL,
-  `estado` varchar(50) NOT NULL,
-  `fecha_creacion` datetime NOT NULL,
-  `fecha_modificacion` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  CONSTRAINT `tickets_soporte_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `tickets_soporte` */
-
-/*Table structure for table `tipo_accion` */
-
-DROP TABLE IF EXISTS `tipo_accion`;
-
-CREATE TABLE `tipo_accion` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `tipo_accion` */
-
-/*Table structure for table `tipo_notificacion` */
-
-DROP TABLE IF EXISTS `tipo_notificacion`;
-
-CREATE TABLE `tipo_notificacion` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `tipo_notificacion` */
-
-/*Table structure for table `transacciones_detalle_pedido` */
-
-DROP TABLE IF EXISTS `transacciones_detalle_pedido`;
-
-CREATE TABLE `transacciones_detalle_pedido` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `transaccion_pago_id` int(11) NOT NULL,
-  `detalle_pedido_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `transaccion_pago_id` (`transaccion_pago_id`),
-  KEY `detalle_pedido_id` (`detalle_pedido_id`),
-  CONSTRAINT `transacciones_detalle_pedido_ibfk_1` FOREIGN KEY (`transaccion_pago_id`) REFERENCES `transacciones_pago` (`id`),
-  CONSTRAINT `transacciones_detalle_pedido_ibfk_2` FOREIGN KEY (`detalle_pedido_id`) REFERENCES `detalle_pedido` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `transacciones_detalle_pedido` */
-
-/*Table structure for table `transacciones_pago` */
-
-DROP TABLE IF EXISTS `transacciones_pago`;
-
-CREATE TABLE `transacciones_pago` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `tipo_pago` varchar(50) NOT NULL,
-  `monto` decimal(10,2) NOT NULL,
-  `fecha_hora` datetime NOT NULL,
-  `comprobante` varchar(255) DEFAULT NULL,
-  `datos_operacion` text DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  CONSTRAINT `transacciones_pago_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `transacciones_pago` */
-
-/*Table structure for table `usuarios` */
-
-DROP TABLE IF EXISTS `usuarios`;
-
-CREATE TABLE `usuarios` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(250) NOT NULL,
-  `apellido` varchar(250) NOT NULL,
-  `email` varchar(60) NOT NULL,
-  `contrasena` varchar(260) NOT NULL,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp(),
-  `fecha_modificacion` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `usuarios` */
-
-/*Table structure for table `usuarios_descuentos` */
-
-DROP TABLE IF EXISTS `usuarios_descuentos`;
-
-CREATE TABLE `usuarios_descuentos` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `promocion_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  KEY `promocion_id` (`promocion_id`),
-  CONSTRAINT `usuarios_descuentos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `usuarios_descuentos_ibfk_2` FOREIGN KEY (`promocion_id`) REFERENCES `promociones` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `usuarios_descuentos` */
-
-/*Table structure for table `valoraciones` */
-
-DROP TABLE IF EXISTS `valoraciones`;
-
-CREATE TABLE `valoraciones` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(11) NOT NULL,
-  `producto_id` int(11) NOT NULL,
-  `calificacion` int(11) NOT NULL,
-  `fecha_hora` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  KEY `producto_id` (`producto_id`),
-  CONSTRAINT `valoraciones_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
-  CONSTRAINT `valoraciones_ibfk_2` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `valoraciones` */
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*[01:36:39 a. m.][71 ms]*/ SHOW DATABASES; 
+/*[01:37:18 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[01:37:18 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[01:37:29 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[01:39:04 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[01:39:04 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[01:39:22 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[01:39:22 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[01:39:26 a. m.][0 ms]*/ CREATE DATABASE `proyecto`CHARACTER SET utf8 COLLATE utf8_general_ci; 
+/*[01:39:27 a. m.][0 ms]*/ SHOW DATABASES; 
+/*[01:39:27 a. m.][0 ms]*/ USE `proyecto`; 
+/*[01:39:35 a. m.][0 ms]*/ SELECT DATABASE(); 
+/*[01:40:18 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[01:40:35 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[01:40:35 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[01:40:35 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[01:46:47 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[01:46:47 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[01:46:47 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[01:46:49 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[01:46:49 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[01:46:49 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[01:46:49 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[01:46:49 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[01:46:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[01:46:51 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[01:46:52 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[01:46:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[01:46:54 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[01:46:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[01:46:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[01:46:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[01:46:57 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'listas_de_pedidos'; 
+/*[01:46:57 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`listas_de_pedidos`; 
+/*[01:46:57 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`listas_de_pedidos`; 
+/*[01:46:57 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`listas_de_pedidos`; 
+/*[01:46:59 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[01:46:59 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[01:46:59 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[01:47:28 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[01:47:28 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[01:47:28 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[01:47:33 a. m.][84 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[01:47:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[01:47:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[01:48:30 a. m.][13 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[01:48:30 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[01:48:30 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[01:49:06 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[01:49:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[01:49:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[01:49:30 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`listas_de_pedidos`; 
+/*[01:49:30 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`listas_de_pedidos`; 
+/*[01:49:30 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`listas_de_pedidos`; 
+/*[01:49:57 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[01:49:57 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[01:49:57 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[01:50:23 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[01:50:24 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[01:50:24 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[01:51:58 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[01:51:58 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[01:51:58 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[01:52:04 a. m.][10 ms]*/ DESCRIBE `proyecto`.`detalle_pedido`; 
+/*[01:52:04 a. m.][2 ms]*/ SHOW INDEX FROM `proyecto`.`detalle_pedido`; 
+/*[01:52:04 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[01:52:56 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[01:52:56 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[01:52:56 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[01:52:56 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[01:52:56 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[01:52:56 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[01:55:05 a. m.][515 ms]*/ ALTER TABLE `proyecto`.`detalle_pedido` ADD COLUMN `fecha_pedido` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL AFTER `usuario_id`, ADD COLUMN `estado` VARCHAR(20) NOT NULL AFTER `fecha_pedido`, ADD COLUMN `direccion_envio` VARCHAR(260) NOT NULL AFTER `estado`, ADD COLUMN `informacion_pago` VARCHAR(260) NOT NULL AFTER `direccion_envio`; 
+/*[01:55:08 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[01:55:08 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[01:55:08 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[01:55:08 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[01:55:08 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[01:55:08 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[01:55:08 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[01:55:41 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[01:55:41 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[01:55:41 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[01:55:41 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[01:55:41 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[01:55:41 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[01:55:41 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[01:55:41 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[01:55:41 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[01:55:41 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[01:56:13 a. m.][395 ms]*/ ALTER TABLE `proyecto`.`consultas` ADD COLUMN `fecha_consulta` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL AFTER `descripcion`; 
+/*[01:56:15 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[01:56:15 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[01:56:15 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[01:56:15 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[01:56:15 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[01:56:15 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[01:56:15 a. m.][4 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[01:56:15 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[01:56:15 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[01:56:15 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[01:56:15 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:00:52 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'listas_de_pedidos'; 
+/*[02:00:52 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:00:52 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`listas_de_pedidos`; 
+/*[02:00:52 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`listas_de_pedidos`; 
+/*[02:00:52 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`listas_de_pedidos`; 
+/*[02:00:52 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[02:00:52 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[02:00:52 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:02:14 a. m.][52 ms]*/ ALTER TABLE `proyecto`.`listas_de_pedidos` ADD COLUMN `usuario_id` INT(11) NOT NULL AFTER `producto_id`, ADD COLUMN `cantidad` INT(11) NULL AFTER `usuario_id`; 
+/*[02:02:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'listas_de_pedidos'; 
+/*[02:02:17 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:02:17 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`listas_de_pedidos`; 
+/*[02:02:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`listas_de_pedidos`; 
+/*[02:02:17 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`listas_de_pedidos`; 
+/*[02:02:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[02:02:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[02:02:17 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:02:17 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:04:00 a. m.][0 ms]*/ SELECT `ENGINE` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = 'proyecto' AND `TABLE_NAME` = 'listas_de_pedidos' AND `TABLE_TYPE` = 'BASE TABLE'; 
+/*[02:04:07 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'listas_de_pedidos'; 
+/*[02:04:25 a. m.][0 ms]*/ SELECT `ENGINE` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = 'proyecto' AND `TABLE_NAME` = 'listas_de_pedidos' AND `TABLE_TYPE` = 'BASE TABLE'; 
+/*[02:05:50 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:05:52 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:05:52 a. m.][15 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:05:55 a. m.][695 ms]*/ ALTER TABLE `proyecto`.`listas_de_pedidos` ADD FOREIGN KEY (`usuario_id`) REFERENCES `proyecto`.`usuarios`(`id`); 
+/*[02:05:57 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'listas_de_pedidos'; 
+/*[02:05:57 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:05:57 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`listas_de_pedidos`; 
+/*[02:05:57 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`listas_de_pedidos`; 
+/*[02:05:57 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`listas_de_pedidos`; 
+/*[02:05:57 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[02:05:57 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[02:05:57 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:05:57 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:05:57 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:05:57 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:06:12 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:06:21 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:10:14 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:10:18 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:10:21 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:10:27 a. m.][0 ms]*/ USE `proyecto`; 
+/*[02:10:27 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[02:10:27 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[02:10:27 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[02:10:27 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[02:10:27 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:10:27 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:10:27 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[02:10:27 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:10:27 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[02:10:27 a. m.][313 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[02:10:27 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[02:10:27 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[02:10:27 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[02:10:27 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[02:10:27 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[02:10:27 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[02:10:27 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'listas_de_pedidos'; 
+/*[02:10:27 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`listas_de_pedidos`; 
+/*[02:10:27 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`listas_de_pedidos`; 
+/*[02:10:28 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`listas_de_pedidos`; 
+/*[02:10:28 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[02:10:28 a. m.][13 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[02:10:28 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[02:10:34 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[02:10:34 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[02:10:34 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[02:10:37 a. m.][0 ms]*/ USE `proyecto`; 
+/*[02:10:37 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[02:10:37 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[02:10:37 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[02:10:37 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[02:10:37 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:10:37 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:10:37 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[02:10:37 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:10:37 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[02:10:37 a. m.][68 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[02:10:37 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[02:10:37 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[02:10:37 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[02:10:37 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[02:10:37 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[02:10:37 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[02:10:37 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'listas_de_pedidos'; 
+/*[02:10:37 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`listas_de_pedidos`; 
+/*[02:10:37 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`listas_de_pedidos`; 
+/*[02:10:37 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`listas_de_pedidos`; 
+/*[02:10:37 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[02:10:37 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[02:10:37 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[02:10:40 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[02:10:40 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:10:41 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[02:10:41 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[02:10:41 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[02:10:41 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:11:01 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:11:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:11:06 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:11:17 a. m.][701 ms]*/ ALTER TABLE `proyecto`.`detalle_pedido` ADD FOREIGN KEY (`usuario_id`) REFERENCES `proyecto`.`usuarios`(`id`); 
+/*[02:11:18 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:11:18 a. m.][0 ms]*/ USE `proyecto`; 
+/*[02:11:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[02:11:18 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[02:11:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[02:11:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[02:11:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:11:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:11:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[02:11:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:11:18 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[02:11:18 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[02:11:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[02:11:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[02:11:18 a. m.][85 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[02:11:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[02:11:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[02:11:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[02:11:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'listas_de_pedidos'; 
+/*[02:11:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`listas_de_pedidos`; 
+/*[02:11:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`listas_de_pedidos`; 
+/*[02:11:18 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`listas_de_pedidos`; 
+/*[02:11:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[02:11:18 a. m.][13 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[02:11:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[02:11:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[02:14:38 a. m.][504 ms]*/ RENAME TABLE `proyecto`.`listas_de_pedidos` TO `proyecto`.`pedidos`; 
+/*[02:14:41 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[02:14:41 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:14:41 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[02:14:41 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[02:14:41 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[02:14:41 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[02:14:41 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[02:14:41 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:14:41 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:14:41 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:14:41 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:14:47 a. m.][0 ms]*/ USE `proyecto`; 
+/*[02:14:47 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[02:14:47 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[02:14:47 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[02:14:47 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[02:14:47 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:14:47 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:14:47 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[02:14:47 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:14:47 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[02:14:47 a. m.][77 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[02:14:47 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[02:14:47 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[02:14:47 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[02:14:47 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[02:14:47 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[02:14:47 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[02:14:47 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'listas_de_pedidos'; 
+/*[02:14:47 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`listas_de_pedidos`; 
+/*[02:14:47 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[02:14:47 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[02:14:47 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[02:14:47 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[02:14:53 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[02:14:53 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[02:14:53 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[02:14:53 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[02:15:23 a. m.][394 ms]*/ ALTER TABLE `proyecto`.`detalle_pedido` ADD COLUMN `pedido_id` INT(11) NOT NULL AFTER `usuario_id`; 
+/*[02:15:25 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[02:15:25 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:15:25 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[02:15:25 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[02:15:25 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[02:15:25 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:15:25 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:15:25 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:15:25 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:15:31 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:15:34 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[02:15:34 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[02:15:36 a. m.][786 ms]*/ ALTER TABLE `proyecto`.`detalle_pedido` ADD FOREIGN KEY (`pedido_id`) REFERENCES `proyecto`.`pedidos`(`id`); 
+/*[02:15:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[02:15:38 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:15:39 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[02:15:39 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[02:15:39 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[02:15:39 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:15:39 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:15:39 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[02:15:39 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[02:15:39 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:15:39 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:15:42 a. m.][0 ms]*/ USE `proyecto`; 
+/*[02:15:42 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[02:15:42 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[02:15:42 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[02:15:42 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[02:15:42 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:15:42 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:15:42 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[02:15:42 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:15:42 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[02:15:42 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[02:15:42 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[02:15:42 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[02:15:42 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[02:15:42 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[02:15:42 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[02:15:42 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[02:15:42 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[02:15:42 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[02:15:42 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[02:15:42 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[02:15:42 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[02:15:42 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[02:15:42 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[02:15:42 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[02:16:18 a. m.][0 ms]*/ USE `prueba`; 
+/*[02:16:20 a. m.][0 ms]*/ SHOW FULL TABLES FROM `prueba` WHERE table_type = 'BASE TABLE'; 
+/*[02:16:25 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `prueba` LIKE 'usuarios'; 
+/*[02:16:25 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:16:25 a. m.][13 ms]*/ SHOW FULL FIELDS FROM `prueba`.`usuarios`; 
+/*[02:16:25 a. m.][0 ms]*/ SHOW CREATE TABLE `prueba`.`usuarios`; 
+/*[02:16:25 a. m.][2 ms]*/ SHOW KEYS FROM `prueba`.`usuarios`; 
+/*[02:16:25 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:16:41 a. m.][0 ms]*/ USE `proyecto`; 
+/*[02:16:46 a. m.][0 ms]*/ USE `test`; 
+/*[02:16:51 a. m.][0 ms]*/ SHOW FULL TABLES FROM `test` WHERE table_type = 'BASE TABLE'; 
+/*[02:16:56 a. m.][0 ms]*/ USE `sistema`; 
+/*[02:16:58 a. m.][0 ms]*/ SHOW FULL TABLES FROM `sistema` WHERE table_type = 'BASE TABLE'; 
+/*[02:17:01 a. m.][0 ms]*/ USE `proyecto`; 
+/*[02:17:12 a. m.][0 ms]*/ USE `dds-ej-17`; 
+/*[02:17:13 a. m.][0 ms]*/ SHOW FULL TABLES FROM `dds-ej-17` WHERE table_type = 'BASE TABLE'; 
+/*[02:17:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `dds-ej-17` LIKE 'personas'; 
+/*[02:17:18 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:17:18 a. m.][13 ms]*/ SHOW FULL FIELDS FROM `dds-ej-17`.`personas`; 
+/*[02:17:18 a. m.][0 ms]*/ SHOW CREATE TABLE `dds-ej-17`.`personas`; 
+/*[02:17:18 a. m.][2 ms]*/ SHOW KEYS FROM `dds-ej-17`.`personas`; 
+/*[02:17:18 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:18:14 a. m.][0 ms]*/ USE `trabajofinal`; 
+/*[02:18:15 a. m.][0 ms]*/ SHOW FULL TABLES FROM `trabajofinal` WHERE table_type = 'BASE TABLE'; 
+/*[02:18:32 a. m.][0 ms]*/ USE `phpmyadmin`; 
+/*[02:18:33 a. m.][0 ms]*/ SHOW FULL TABLES FROM `phpmyadmin` WHERE table_type = 'BASE TABLE'; 
+/*[02:18:39 a. m.][0 ms]*/ USE `mysql`; 
+/*[02:18:41 a. m.][1 ms]*/ SHOW FULL TABLES FROM `mysql` WHERE table_type = 'BASE TABLE'; 
+/*[02:22:49 a. m.][0 ms]*/ USE `proyecto`; 
+/*[02:22:50 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:23:10 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:23:10 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:25:29 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[02:25:29 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:25:29 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:25:29 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:25:29 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:25:29 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:27:18 a. m.][0 ms]*/ USE `sistema`; 
+/*[02:27:21 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:27:28 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `sistema` LIKE 'usuarios'; 
+/*[02:27:28 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:27:28 a. m.][199 ms]*/ SHOW FULL FIELDS FROM `sistema`.`usuarios`; 
+/*[02:27:28 a. m.][0 ms]*/ SHOW CREATE TABLE `sistema`.`usuarios`; 
+/*[02:27:28 a. m.][1 ms]*/ SHOW KEYS FROM `sistema`.`usuarios`; 
+/*[02:27:28 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:35:55 a. m.][0 ms]*/ USE `proyecto`; 
+/*[02:36:13 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:36:13 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:36:13 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:36:29 a. m.][0 ms]*/ ALTER TABLE `usuarios` CHANGE COLUMN `contraseña` `contraseña_hasheada` VARCHAR(255) NOT NULL; 
+/*[02:36:35 a. m.][2 ms]*/ ALTER TABLE `usuarios` CHANGE COLUMN `contraseña` `contraseña_hasheada` VARCHAR(255) NOT NULL; 
+/*[02:37:19 a. m.][0 ms]*/ CREATE TABLE `proyecto`.`registro_usuario`( `id` INT(11) NOT NULL AUTO_INCREMENT, `usuario_id` INT(11) NOT NULL, `nombre` VARCHAR(260) NOT NULL, `apellido` VARCHAR(260) NOT NULL, `fecha_nac` DATE NOT NULL DEFAULT '0', `mail` VARCHAR(60) NOT NULL, `contrasena` VARCHAR(260) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[02:37:28 a. m.][530 ms]*/ CREATE TABLE `proyecto`.`registro_usuario`( `id` INT(11) NOT NULL AUTO_INCREMENT, `usuario_id` INT(11) NOT NULL, `nombre` VARCHAR(260) NOT NULL, `apellido` VARCHAR(260) NOT NULL, `fecha_nac` DATE NOT NULL, `mail` VARCHAR(60) NOT NULL, `contrasena` VARCHAR(260) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[02:37:34 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[02:37:34 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:37:34 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[02:37:34 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[02:37:34 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[02:37:34 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:37:34 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:37:43 a. m.][3 ms]*/ ALTER TABLE `usuarios` CHANGE COLUMN `contraseña` `contraseña_hasheada` VARCHAR(255) NOT NULL; 
+/*[02:37:46 a. m.][3 ms]*/ ALTER TABLE `usuarios` CHANGE COLUMN `contraseña` `contraseña_hasheada` VARCHAR(255) NOT NULL; 
+/*[02:38:08 a. m.][409 ms]*/ ALTER TABLE `proyecto`.`usuarios` ADD COLUMN `contrasena` VARCHAR(260) NOT NULL AFTER `email`; 
+/*[02:38:11 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[02:38:11 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:38:11 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:38:11 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:38:11 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:38:11 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:38:11 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:38:15 a. m.][0 ms]*/ ALTER TABLE `usuarios` CHANGE COLUMN `contraseña` `contraseña_hasheada` VARCHAR(255) NOT NULL; 
+/*[02:38:16 a. m.][1 ms]*/ ALTER TABLE `usuarios` CHANGE COLUMN `contraseña` `contraseña_hasheada` VARCHAR(255) NOT NULL; 
+/*[02:38:18 a. m.][2 ms]*/ ALTER TABLE `usuarios` CHANGE COLUMN `contraseña` `contraseña_hasheada` VARCHAR(255) NOT NULL; 
+/*[02:39:10 a. m.][0 ms]*/ ALTER TABLE `registro_usuario` CHANGE COLUMN `contraseña` `contraseña_hasheada` VARCHAR(255) NOT NULL; 
+/*[02:39:50 a. m.][0 ms]*/ USE `proyecto`; 
+/*[02:39:50 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[02:39:50 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[02:39:50 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[02:39:50 a. m.][2 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[02:39:50 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:39:50 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:39:50 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[02:39:50 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:39:50 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[02:39:50 a. m.][309 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[02:39:50 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[02:39:50 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[02:39:50 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[02:39:50 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[02:39:50 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[02:39:50 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[02:39:50 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[02:39:50 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[02:39:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[02:39:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[02:39:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[02:39:51 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[02:39:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[02:39:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[02:39:59 a. m.][2 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[02:39:59 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[02:39:59 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[02:41:15 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:41:18 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:41:18 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:41:20 a. m.][751 ms]*/ ALTER TABLE `proyecto`.`registro_usuario` ADD FOREIGN KEY (`usuario_id`) REFERENCES `proyecto`.`usuarios`(`id`); 
+/*[02:41:22 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[02:41:22 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:41:22 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[02:41:22 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[02:41:22 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[02:41:22 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:41:22 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:41:22 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:41:22 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:41:26 a. m.][0 ms]*/ USE `proyecto`; 
+/*[02:41:26 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[02:41:26 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[02:41:26 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[02:41:26 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[02:41:26 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:41:26 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:41:26 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[02:41:26 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:41:26 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[02:41:26 a. m.][70 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[02:41:26 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[02:41:26 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[02:41:26 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[02:41:26 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[02:41:26 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[02:41:26 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[02:41:26 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[02:41:26 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[02:41:26 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[02:41:26 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[02:41:26 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[02:41:26 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[02:41:26 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[02:41:26 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[02:41:26 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[02:41:26 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[02:41:26 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[02:41:26 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[02:43:51 a. m.][413 ms]*/ ALTER TABLE `proyecto`.`registro_usuario` ADD COLUMN `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL AFTER `contrasena`, ADD COLUMN `fecha_modificacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL AFTER `fecha_creacion`; 
+/*[02:43:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[02:43:54 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:43:54 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[02:43:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[02:43:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[02:43:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:43:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:43:54 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:43:54 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:46:19 a. m.][381 ms]*/ ALTER TABLE `usuarios` ADD COLUMN `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP; 
+/*[02:46:23 a. m.][0 ms]*/ SELECT * FROM `proyecto`.`registro_usuario` LIMIT 0, 1000; 
+/*[02:46:23 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[02:46:23 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[02:46:23 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[02:47:12 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:47:13 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:47:13 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:47:13 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:47:13 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:47:20 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[02:47:20 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:47:20 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:47:20 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:47:20 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:47:20 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:47:32 a. m.][0 ms]*/ USE `proyecto`; 
+/*[02:47:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[02:47:32 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[02:47:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[02:47:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[02:47:32 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:47:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:47:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[02:47:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:47:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[02:47:32 a. m.][68 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[02:47:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[02:47:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[02:47:32 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[02:47:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[02:47:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[02:47:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[02:47:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[02:47:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[02:47:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[02:47:32 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[02:47:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[02:47:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[02:47:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[02:47:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[02:47:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[02:47:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[02:47:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[02:47:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[02:49:39 a. m.][0 ms]*/ SELECT * FROM `proyecto`.`usuarios` LIMIT 0, 1000; 
+/*[02:49:39 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:49:39 a. m.][14 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:49:39 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:50:18 a. m.][0 ms]*/ ALTER TABLE `usuarios` ADD COLUMN `fecha_modificacion` TIMESTAMP ON UPDATE; 
+/*[02:50:39 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[02:50:40 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:50:40 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:50:40 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:50:40 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:50:40 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:51:00 a. m.][135 ms]*/ ALTER TABLE `proyecto`.`usuarios` ADD COLUMN `fecha_modificacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL AFTER `fecha_creacion`; 
+/*[02:51:02 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[02:51:02 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:51:02 a. m.][18 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:51:02 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:51:02 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:51:02 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:51:02 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:55:54 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:56:20 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:56:20 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:57:43 a. m.][571 ms]*/ CREATE TABLE `proyecto`.`roles`( `id` INT NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(60) NOT NULL, `descripcion` VARCHAR(260) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[02:57:45 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:57:46 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:57:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles'; 
+/*[02:57:46 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:57:46 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[02:57:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[02:57:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[02:57:46 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:57:57 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:57:57 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:59:47 a. m.][560 ms]*/ CREATE TABLE `proyecto`.`permisos`( `id` INT NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(100) NOT NULL, `descripcion` VARCHAR(200) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[02:59:49 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:59:49 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:59:50 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[02:59:50 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:59:50 a. m.][466 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[02:59:50 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[02:59:50 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[02:59:50 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:00:02 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:00:02 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:01:51 a. m.][253 ms]*/ CREATE TABLE `proyecto`.`roles_permisos`( `id` INT NOT NULL AUTO_INCREMENT, `rol_id` INT(11) NOT NULL, `permiso_id` INT(11) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:01:53 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:01:54 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:01:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[03:01:54 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:01:54 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[03:01:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[03:01:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[03:01:54 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:02:31 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:02:31 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:02:32 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:03:36 a. m.][506 ms]*/ CREATE TABLE `proyecto`.`jerarquia_usuarios`( `id` INT NOT NULL AUTO_INCREMENT, `usuario_id` INT NOT NULL, `jefe_id` INT, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:03:45 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:03:45 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:03:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[03:03:46 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:03:46 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[03:03:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[03:03:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[03:03:46 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:04:17 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:04:17 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:04:59 a. m.][560 ms]*/ CREATE TABLE `proyecto`.`roles_usuarios`( `id` INT NOT NULL AUTO_INCREMENT, `usuario_id` INT NOT NULL, `rol_id` INT NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:05:04 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[03:05:04 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:05:04 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[03:05:04 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[03:05:04 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[03:05:04 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:05:04 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:05:20 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:05:23 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:05:23 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:05:25 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:05:26 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:05:27 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:05:29 a. m.][714 ms]*/ ALTER TABLE `proyecto`.`roles_usuarios` ADD FOREIGN KEY (`usuario_id`) REFERENCES `proyecto`.`usuarios`(`id`), ADD FOREIGN KEY (`rol_id`) REFERENCES `proyecto`.`usuarios`(`id`); 
+/*[03:05:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[03:05:32 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:05:32 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[03:05:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[03:05:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[03:05:32 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:05:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:05:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:05:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:05:32 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:05:32 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:06:05 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:06:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:06:06 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:06:08 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:06:10 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:06:10 a. m.][14 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:06:12 a. m.][734 ms]*/ ALTER TABLE `proyecto`.`jerarquia_usuarios` ADD FOREIGN KEY (`usuario_id`) REFERENCES `proyecto`.`usuarios`(`id`), ADD FOREIGN KEY (`jefe_id`) REFERENCES `proyecto`.`usuarios`(`id`); 
+/*[03:06:14 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[03:06:14 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:06:14 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[03:06:14 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[03:06:14 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[03:06:14 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:06:14 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:06:14 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:06:14 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:06:14 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:06:14 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:06:34 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:06:38 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[03:06:38 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[03:06:39 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:06:40 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[03:06:40 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[03:06:44 a. m.][735 ms]*/ ALTER TABLE `proyecto`.`roles_permisos` ADD FOREIGN KEY (`rol_id`) REFERENCES `proyecto`.`roles`(`id`), ADD FOREIGN KEY (`permiso_id`) REFERENCES `proyecto`.`permisos`(`id`); 
+/*[03:06:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[03:06:46 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:06:46 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[03:06:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[03:06:46 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[03:06:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[03:06:46 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[03:06:46 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[03:06:46 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[03:06:46 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:06:46 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:07:36 a. m.][0 ms]*/ USE `proyecto`; 
+/*[03:07:36 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[03:07:36 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[03:07:36 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[03:07:36 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[03:07:36 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:07:36 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[03:07:36 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[03:07:36 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:07:36 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[03:07:37 a. m.][315 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[03:07:37 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[03:07:37 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[03:07:37 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[03:07:37 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[03:07:37 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[03:07:37 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[03:07:37 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[03:07:37 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[03:07:37 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[03:07:37 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[03:07:37 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[03:07:37 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[03:07:37 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[03:07:37 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[03:07:37 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[03:07:37 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[03:07:37 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[03:07:37 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[03:08:14 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[03:08:14 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[03:08:14 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[03:08:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[03:08:16 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[03:08:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[03:08:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[03:08:18 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[03:08:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[03:08:20 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[03:08:20 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:08:20 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[03:08:20 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[03:08:20 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:08:20 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[03:08:20 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[03:08:27 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[03:08:27 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[03:08:27 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[03:08:30 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[03:08:30 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[03:08:30 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[03:08:30 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[03:08:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[03:08:33 a. m.][39 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[03:08:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[03:08:40 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[03:08:40 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[03:08:41 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[03:08:41 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[03:08:44 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[03:08:44 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[03:08:44 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[03:08:44 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[03:08:44 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[03:08:48 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[03:08:48 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[03:08:48 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[03:08:48 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[03:08:48 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[03:08:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[03:08:54 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[03:08:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[03:08:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[03:16:32 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:16:48 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:16:48 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:20:01 a. m.][840 ms]*/ CREATE TABLE `proyecto`.`registro_actividad`( `id` INT NOT NULL AUTO_INCREMENT, `usuario_id` INT NOT NULL, `accion_id` INT NOT NULL, `descripcion` VARCHAR(60), `fecha_hora` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:20:05 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:20:05 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[03:20:06 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:20:06 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[03:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[03:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[03:20:06 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:20:19 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:20:19 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:24:29 a. m.][552 ms]*/ CREATE TABLE `proyecto`.`tipo_accion`( `id` INT NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(100) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:24:32 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:24:32 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:24:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[03:24:32 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:24:32 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[03:24:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[03:24:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[03:24:32 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:24:58 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:25:02 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:25:02 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:25:03 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:25:13 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[03:25:13 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[03:25:22 a. m.][903 ms]*/ ALTER TABLE `proyecto`.`registro_actividad` ADD FOREIGN KEY (`usuario_id`) REFERENCES `proyecto`.`usuarios`(`id`), ADD FOREIGN KEY (`accion_id`) REFERENCES `proyecto`.`tipo_accion`(`id`); 
+/*[03:25:26 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[03:25:26 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:25:26 a. m.][15 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[03:25:26 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[03:25:26 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[03:25:26 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:25:26 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:25:26 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[03:25:26 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[03:25:26 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:25:26 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:25:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[03:25:33 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[03:25:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[03:25:43 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[03:25:43 a. m.][14 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[03:25:43 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[03:25:43 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[03:25:43 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[03:27:26 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:27:27 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:29:34 a. m.][499 ms]*/ CREATE TABLE `proyecto`.`notificaciones`( `id` INT NOT NULL AUTO_INCREMENT, `usuario_id` INT NOT NULL, `mensaje` VARCHAR(400) NOT NULL, `fecha_hora` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `leida` BOOLEAN NOT NULL DEFAULT 0, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:29:37 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:29:37 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:29:37 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[03:29:37 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:29:37 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[03:29:37 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[03:29:37 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[03:29:37 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:30:00 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:30:00 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:30:38 a. m.][615 ms]*/ CREATE TABLE `proyecto`.`tipo_notificacion`( `id` INT NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(100) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:30:41 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:30:41 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:30:41 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_notificacion'; 
+/*[03:30:41 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:30:41 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[03:30:41 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[03:30:41 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[03:30:41 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:37:10 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:37:10 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:39:27 a. m.][529 ms]*/ CREATE TABLE `proyecto`.`notificaciones_tipo`( `id` INT NOT NULL AUTO_INCREMENT, `notificaciones_id` INT NOT NULL, `tipo_notificacion_id` INT NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:39:30 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:39:30 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:39:30 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[03:39:30 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:39:30 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[03:39:30 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[03:39:30 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[03:39:30 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:39:46 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:39:57 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[03:39:57 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[03:39:58 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:40:01 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[03:40:01 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[03:40:04 a. m.][856 ms]*/ ALTER TABLE `proyecto`.`notificaciones_tipo` ADD FOREIGN KEY (`notificaciones_id`) REFERENCES `proyecto`.`notificaciones`(`id`), ADD FOREIGN KEY (`tipo_notificacion_id`) REFERENCES `proyecto`.`tipo_notificacion`(`id`); 
+/*[03:40:07 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[03:40:07 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:40:07 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[03:40:07 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[03:40:07 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[03:40:07 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[03:40:07 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[03:40:07 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[03:40:07 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[03:40:07 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:40:07 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:40:16 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:40:21 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:40:21 a. m.][15 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:40:25 a. m.][1764 ms]*/ ALTER TABLE `proyecto`.`notificaciones` ADD FOREIGN KEY (`usuario_id`) REFERENCES `proyecto`.`usuarios`(`id`); 
+/*[03:40:27 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[03:40:27 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:40:28 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[03:40:28 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[03:40:28 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[03:40:28 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:40:28 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:40:28 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:40:28 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:40:46 a. m.][0 ms]*/ USE `proyecto`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[03:40:46 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[03:40:46 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[03:40:46 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[03:40:46 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[03:40:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[03:40:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[03:40:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[03:40:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[03:40:46 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[03:40:46 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[03:40:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[03:40:46 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[03:40:46 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[03:40:46 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[03:40:46 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[03:40:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[03:40:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[03:40:46 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[03:40:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[03:40:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[03:40:46 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[03:40:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[03:40:46 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[03:40:46 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[03:40:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[03:40:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[03:40:46 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[03:41:20 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[03:41:20 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[03:41:21 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[03:41:21 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[03:41:23 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[03:41:23 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[03:41:24 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[03:41:24 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[03:41:37 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_notificacion'; 
+/*[03:41:37 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[03:41:37 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[03:41:37 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[03:50:13 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:50:41 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:50:42 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:50:43 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:50:43 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:50:44 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:50:44 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:50:44 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:50:45 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:53:55 a. m.][0 ms]*/ CREATE TABLE `proyecto`.`configuracion_sistema`( `id` INT NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(100) NOT NULL, `version` VARCHAR(100) NOT NULL, `descripcion` VARCHAR(100) NOT NULL, `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `fecha_modificacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:55:49 a. m.][0 ms]*/ CREATE TABLE `proyecto`.`configuracion_sistema`( `id` INT NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(100) NOT NULL, `version` VARCHAR(100) NOT NULL, `descripcion` VARCHAR(100) NOT NULL, `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `fecha_modificacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:56:00 a. m.][0 ms]*/ CREATE TABLE `proyecto`.`configuracion_sistema`( `id` INT NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(100) NOT NULL, `version` VARCHAR(100) NOT NULL, `descripcion` VARCHAR(100) NOT NULL, `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `fecha_modificacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:56:07 a. m.][0 ms]*/ CREATE TABLE `proyecto`.`configuracion_sistema`( `id` INT NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(100) NOT NULL, `version` VARCHAR(100) NOT NULL, `descripcion` VARCHAR(100) NOT NULL, `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `fecha_modificacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:56:17 a. m.][0 ms]*/ CREATE TABLE `proyecto`.`configuracion_sistema`( `id` INT NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(100) NOT NULL, `version` VARCHAR(100) NOT NULL, `descripcion` VARCHAR(100) NOT NULL, `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `fecha_modificacion` TIMESTAMP DEFAULT '0' ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:56:29 a. m.][0 ms]*/ CREATE TABLE `proyecto`.`configuracion_sistema`( `id` INT NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(100) NOT NULL, `version` VARCHAR(100) NOT NULL, `descripcion` VARCHAR(100) NOT NULL, `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `fecha_modificacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:58:19 a. m.][321 ms]*/ CREATE TABLE `proyecto`.`configuracion_sistema`( `id` INT NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(100) NOT NULL, `version` VARCHAR(100) NOT NULL, `descripcion` VARCHAR(100) NOT NULL, `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[03:58:23 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[03:58:23 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:58:23 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[03:58:23 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:58:23 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[03:58:23 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[03:58:23 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[03:58:23 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:59:41 a. m.][392 ms]*/ ALTER TABLE `proyecto`.`configuracion_sistema` ADD COLUMN `fecha_modificacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL AFTER `fecha_creacion`; 
+/*[03:59:44 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[03:59:44 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[03:59:44 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[03:59:44 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[03:59:44 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[03:59:44 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[03:59:44 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:00:08 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:00:09 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:00:09 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:00:10 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:00:11 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:00:46 a. m.][518 ms]*/ CREATE TABLE `proyecto`.`categorias_configuracion`( `id` INT NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(100) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[04:00:49 a. m.][1 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:00:49 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:00:49 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'categorias_configuracion'; 
+/*[04:00:49 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:00:49 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[04:00:49 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[04:00:49 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[04:00:49 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:01:12 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:02:09 a. m.][577 ms]*/ CREATE TABLE `proyecto`.`configuracion_categoria`( `id` INT NOT NULL AUTO_INCREMENT, `configuracion_id` INT NOT NULL, `categoria_configuracion_id` INT NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[04:02:13 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:02:13 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:02:13 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[04:02:13 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:02:13 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[04:02:13 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[04:02:13 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[04:02:13 a. m.][1 ms]*/ SHOW COLLATION; 
+/*[04:02:56 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:02:56 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:02:57 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:02:57 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:05:09 a. m.][515 ms]*/ CREATE TABLE `proyecto`.`configuracion_usuario`( `id` INT NOT NULL AUTO_INCREMENT, `configuracion_sistema_id` INT NOT NULL, `usuario_id` INT NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[04:05:12 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:05:12 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:05:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[04:05:12 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:05:12 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[04:05:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[04:05:12 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[04:05:12 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:05:22 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:05:24 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:05:28 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:05:28 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:05:29 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:06:17 a. m.][548 ms]*/ CREATE TABLE `proyecto`.`configuracion_rol`( `id` INT NOT NULL AUTO_INCREMENT, `configuracion_sistema_id` INT NOT NULL, `rol_id` INT NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[04:06:20 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:06:20 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:06:20 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[04:06:20 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:06:20 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[04:06:20 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[04:06:20 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[04:06:20 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:06:35 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:06:36 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:06:38 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:06:38 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:06:38 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:07:23 a. m.][528 ms]*/ CREATE TABLE `proyecto`.`configuracion_permiso`( `id` INT NOT NULL AUTO_INCREMENT, `configuracion_sistema_id` INT NOT NULL, `permiso_id` INT NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[04:07:27 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:07:27 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:07:27 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[04:07:27 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:07:27 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[04:07:27 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[04:07:27 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[04:07:27 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:07:40 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:07:43 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:07:43 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:07:45 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:07:52 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[04:07:52 a. m.][14 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[04:07:55 a. m.][886 ms]*/ ALTER TABLE `proyecto`.`configuracion_permiso` ADD FOREIGN KEY (`configuracion_sistema_id`) REFERENCES `proyecto`.`configuracion_sistema`(`id`), ADD FOREIGN KEY (`permiso_id`) REFERENCES `proyecto`.`permisos`(`id`); 
+/*[04:07:58 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[04:07:58 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:07:58 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[04:07:58 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[04:07:58 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[04:07:58 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:07:58 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:07:58 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[04:07:58 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[04:07:58 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:07:58 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:08:10 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:08:15 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:08:15 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:08:17 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:08:23 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[04:08:23 a. m.][23 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[04:08:26 a. m.][1961 ms]*/ ALTER TABLE `proyecto`.`configuracion_rol` ADD FOREIGN KEY (`configuracion_sistema_id`) REFERENCES `proyecto`.`configuracion_sistema`(`id`), ADD FOREIGN KEY (`rol_id`) REFERENCES `proyecto`.`roles`(`id`); 
+/*[04:08:28 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[04:08:28 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:08:28 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[04:08:28 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[04:08:28 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[04:08:28 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:08:28 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:08:28 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[04:08:28 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[04:08:28 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:08:28 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:09:15 a. m.][0 ms]*/ SELECT `Host`, `User` FROM `mysql`.`user`; 
+/*[04:09:15 a. m.][15 ms]*/ SHOW COLUMNS FROM `mysql`.`user`; 
+/*[04:09:15 a. m.][3 ms]*/ SHOW COLUMNS FROM `mysql`.`db`; 
+/*[04:09:15 a. m.][2 ms]*/ SHOW COLUMNS FROM `mysql`.`tables_priv`; 
+/*[04:09:15 a. m.][2 ms]*/ SHOW COLUMNS FROM `mysql`.`procs_priv`; 
+/*[04:09:15 a. m.][0 ms]*/ SHOW DATABASES; 
+/*[04:09:15 a. m.][0 ms]*/ SELECT * FROM `mysql`.`user` WHERE USER = 'pma' AND HOST = 'localhost'; 
+/*[04:09:15 a. m.][0 ms]*/ SELECT * FROM `mysql`.`db` WHERE USER = 'pma' AND HOST = 'localhost'; 
+/*[04:09:15 a. m.][0 ms]*/ SELECT Db, Table_name, Table_priv FROM `mysql`.`tables_priv` WHERE USER = 'pma' AND HOST = 'localhost'; 
+/*[04:09:15 a. m.][0 ms]*/ SELECT Db, Table_name, Column_name, Column_priv FROM `mysql`.`columns_priv` WHERE USER = 'pma' AND HOST = 'localhost'; 
+/*[04:09:15 a. m.][0 ms]*/ SELECT Db, Routine_name, Routine_type, Proc_priv FROM `mysql`.`procs_priv` WHERE USER = 'pma' AND HOST = 'localhost'; 
+/*[04:09:15 a. m.][0 ms]*/ SELECT DATABASE(); 
+/*[04:09:15 a. m.][0 ms]*/ USE `mysql`; 
+/*[04:09:21 a. m.][0 ms]*/ USE `proyecto`; 
+/*[04:12:18 a. m.][0 ms]*/ SHOW VARIABLES LIKE 'profiling'; 
+/*[04:12:18 a. m.][0 ms]*/ SET PROFILING = 1; 
+/*[04:12:18 a. m.][0 ms]*/ SET profiling_history_size = 0; 
+/*[04:12:18 a. m.][0 ms]*/ SET profiling_history_size = 15; 
+/*[04:12:18 a. m.][2 ms]*/ SHOW STATUS; 
+/*[04:12:18 a. m.][2 ms]*/ SHOW STATUS; 
+/*[04:12:18 a. m.][0 ms]*/ SELECT VERSION (); 
+/*[04:12:18 a. m.][1 ms]*/ SHOW STATUS; 
+/*[04:12:18 a. m.][0 ms]*/ SHOW PROFILES; 
+/*[04:12:18 a. m.][0 ms]*/ SELECT state, ROUND(SUM(duration),5) AS `duration (summed) in sec` FROM information_schema.profiling WHERE query_id = 5 GROUP BY state ORDER BY `duration (summed) in sec` DESC; 
+/*[04:12:18 a. m.][0 ms]*/ SET PROFILING = 0; 
+/*[04:12:18 a. m.][0 ms]*/ EXPLAIN SELECT VERSION (); 
+/*[04:16:58 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:17:01 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:17:01 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:17:02 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:17:09 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[04:17:09 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[04:17:13 a. m.][717 ms]*/ ALTER TABLE `proyecto`.`configuracion_usuario` ADD FOREIGN KEY (`configuracion_sistema_id`) REFERENCES `proyecto`.`configuracion_sistema`(`id`), ADD FOREIGN KEY (`usuario_id`) REFERENCES `proyecto`.`usuarios`(`id`); 
+/*[04:17:15 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[04:17:15 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:17:15 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[04:17:15 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[04:17:15 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[04:17:15 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:17:15 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:17:15 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[04:17:15 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[04:17:15 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:17:15 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:18:00 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:18:01 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:18:01 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:18:04 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:18:26 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[04:18:26 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[04:18:38 a. m.][863 ms]*/ ALTER TABLE `proyecto`.`configuracion_categoria` ADD FOREIGN KEY (`configuracion_id`) REFERENCES `proyecto`.`configuracion_sistema`(`id`), ADD FOREIGN KEY (`categoria_configuracion_id`) REFERENCES `proyecto`.`categorias_configuracion`(`id`); 
+/*[04:18:40 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[04:18:40 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:18:41 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[04:18:41 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[04:18:41 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[04:18:41 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:18:41 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:18:41 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[04:18:41 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[04:18:41 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:18:41 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:19:27 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'categorias_configuracion'; 
+/*[04:19:27 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[04:19:27 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[04:19:30 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[04:19:30 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[04:19:30 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[04:19:30 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[04:19:30 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[04:19:46 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[04:19:46 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[04:19:46 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[04:19:46 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[04:20:26 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[04:20:26 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[04:20:26 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[04:20:43 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[04:20:43 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:20:43 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[04:20:43 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[04:20:43 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[04:20:43 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:20:43 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:20:43 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[04:20:43 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[04:20:43 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:21:00 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles'; 
+/*[04:21:00 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[04:21:00 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[04:21:00 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[04:21:00 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[04:21:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[04:21:12 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:21:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[04:21:12 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:22:00 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[04:22:00 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[04:22:00 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[04:22:00 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[04:27:45 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:27:45 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:29:02 a. m.][519 ms]*/ CREATE TABLE `proyecto`.`historial_contrasenas`( `id` INT NOT NULL AUTO_INCREMENT, `usuario_id` INT NOT NULL, `contrasenas_hasheada` VARCHAR(255) NOT NULL, `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[04:29:04 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:29:04 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:29:04 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'historial_contrasenas'; 
+/*[04:29:04 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:29:04 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`historial_contrasenas`; 
+/*[04:29:04 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[04:29:04 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`historial_contrasenas`; 
+/*[04:29:04 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:29:22 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:29:22 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:29:23 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:29:23 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:29:24 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:30:17 a. m.][596 ms]*/ CREATE TABLE `registros_cambio_contrasena` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `usuario_id` INT(11) NOT NULL, `contrasena_nueva_hasheada` VARCHAR(255) NOT NULL, `fecha_creacion` DATETIME NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[04:31:48 a. m.][657 ms]*/ CREATE TABLE `configuracion_historial_contrasenas` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `usuario_id` INT(11) NOT NULL, `maximo_registros` INT(11), `longitud_minima` INT(11), `periodo_almacenamiento` INT(11), PRIMARY KEY (`id`), FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[04:31:49 a. m.][0 ms]*/ CREATE TABLE `configuracion_historial_contrasenas` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `usuario_id` INT(11) NOT NULL, `maximo_registros` INT(11), `longitud_minima` INT(11), `periodo_almacenamiento` INT(11), PRIMARY KEY (`id`), FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[04:31:49 a. m.][0 ms]*/ CREATE TABLE `configuracion_historial_contrasenas` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `usuario_id` INT(11) NOT NULL, `maximo_registros` INT(11), `longitud_minima` INT(11), `periodo_almacenamiento` INT(11), PRIMARY KEY (`id`), FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[04:40:11 a. m.][660 ms]*/ CREATE TABLE `clientes` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(100) NOT NULL, `tipo` VARCHAR(50) NOT NULL, `direccion` TEXT, `telefono` VARCHAR(20), `correo` VARCHAR(100), PRIMARY KEY (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[04:42:15 a. m.][0 ms]*/ CREATE TABLE `contactos` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `cliente_id` INT(11) NOT NULL, `nombre` VARCHAR(100) NOT NULL, `puesto` VARCHAR(50), `telefono` VARCHAR(20), `correo` VARCHAR(100), `usuario_id` INT(11), PRIMARY KEY (`id`), FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`), FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`), ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[04:43:09 a. m.][690 ms]*/ CREATE TABLE `contactos` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `cliente_id` INT(11) NOT NULL, `nombre` VARCHAR(100) NOT NULL, `puesto` VARCHAR(50), `telefono` VARCHAR(20), `correo` VARCHAR(100), `usuario_id` INT(11), PRIMARY KEY (`id`), FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`), FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ) ENGINE = INNODB DEFAULT CHARSET = utf8; 
+/*[04:43:38 a. m.][0 ms]*/ USE `proyecto`; 
+/*[04:43:38 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[04:43:38 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[04:43:38 a. m.][78 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[04:43:38 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[04:43:38 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[04:43:38 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[04:43:38 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[04:43:38 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[04:43:38 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[04:43:38 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[04:43:38 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[04:43:38 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[04:43:38 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[04:43:38 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[04:43:38 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_notificacion'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[04:43:38 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'categorias_configuracion'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[04:43:38 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[04:43:38 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[04:43:38 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[04:43:38 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[04:43:38 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[04:43:39 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles'; 
+/*[04:43:39 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[04:43:39 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[04:43:39 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[04:43:39 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[04:43:39 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[04:43:39 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:43:39 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[04:43:39 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:43:39 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[04:43:39 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[04:43:39 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[04:43:39 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[04:43:52 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'historial_contrasenas'; 
+/*[04:43:52 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`historial_contrasenas`; 
+/*[04:43:52 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[04:44:03 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'historial_contrasenas'; 
+/*[04:44:03 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:44:03 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`historial_contrasenas`; 
+/*[04:44:03 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[04:44:03 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`historial_contrasenas`; 
+/*[04:44:03 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:44:11 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:44:14 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[04:44:14 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[04:44:17 a. m.][634 ms]*/ ALTER TABLE `proyecto`.`historial_contrasenas` ADD FOREIGN KEY (`usuario_id`) REFERENCES `proyecto`.`usuarios`(`id`); 
+/*[04:44:18 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[04:44:18 a. m.][0 ms]*/ USE `proyecto`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[04:44:18 a. m.][26 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[04:44:18 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[04:44:18 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[04:44:18 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[04:44:18 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[04:44:18 a. m.][27 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[04:44:18 a. m.][7 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_notificacion'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'categorias_configuracion'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'historial_contrasenas'; 
+/*[04:44:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`historial_contrasenas`; 
+/*[04:44:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[04:44:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`historial_contrasenas`; 
+/*[04:44:35 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registros_cambio_contrasena'; 
+/*[04:44:35 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[04:44:35 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registros_cambio_contrasena`; 
+/*[04:44:35 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[04:46:47 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'contactos'; 
+/*[04:46:47 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`contactos`; 
+/*[04:46:47 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`contactos`; 
+/*[04:46:47 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`contactos`; 
+/*[04:46:52 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'clientes'; 
+/*[04:46:52 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`clientes`; 
+/*[04:46:52 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`clientes`; 
+/*[04:46:52 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`clientes`; 
+/*[04:49:58 a. m.][577 ms]*/ CREATE TABLE `registro_errores` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `usuario_id` INT(11), `descripcion` TEXT NOT NULL, `fecha_hora` DATETIME NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[04:57:42 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[04:57:42 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:57:42 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[04:57:42 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[04:57:42 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[04:57:42 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[04:57:42 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[04:57:42 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:59:23 a. m.][453 ms]*/ ALTER TABLE `proyecto`.`productos` ADD COLUMN `nombre` VARCHAR(100) NOT NULL AFTER `tipo_producto_id`, ADD COLUMN `descripcion` VARCHAR(100) NOT NULL AFTER `nombre`, ADD COLUMN `tiempo_confeccion_horas` INT(11) NOT NULL AFTER `descripcion`; 
+/*[04:59:28 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[04:59:28 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[04:59:28 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[04:59:28 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[04:59:28 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[04:59:28 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[04:59:28 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[04:59:28 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[04:59:28 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[05:00:34 a. m.][1436 ms]*/ CREATE TABLE `colores` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(50) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:00:46 a. m.][247 ms]*/ CREATE TABLE `tallas` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(50) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:02:02 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[05:02:02 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[05:02:02 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[05:02:02 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[05:02:02 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[05:02:02 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:04:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[05:04:19 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[05:04:19 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[05:04:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[05:04:19 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[05:04:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[05:04:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[05:04:19 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:05:50 a. m.][435 ms]*/ DROP TABLE `proyecto`.`tipo_producto`; 
+/*[05:06:03 a. m.][160 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[05:06:03 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[05:06:03 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[05:06:03 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_producto`; 
+/*[05:06:03 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_producto`; 
+/*[05:06:03 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:06:17 a. m.][158 ms]*/ ALTER TABLE `proyecto`.`productos` DROP FOREIGN KEY `productos_ibfk_1`; 
+/*[05:06:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[05:06:19 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[05:06:20 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[05:06:20 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[05:06:20 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[05:06:20 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:06:20 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[05:06:31 a. m.][208 ms]*/ DROP TABLE `proyecto`.`tipo_producto`; 
+/*[05:08:16 a. m.][0 ms]*/ USE `proyecto`; 
+/*[05:08:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[05:08:16 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[05:08:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[05:08:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[05:08:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[05:08:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[05:08:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[05:08:17 a. m.][326 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[05:08:17 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_producto'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_producto`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[05:08:17 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[05:08:17 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_notificacion'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'categorias_configuracion'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'historial_contrasenas'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`historial_contrasenas`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`historial_contrasenas`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registros_cambio_contrasena'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registros_cambio_contrasena`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'contactos'; 
+/*[05:08:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`contactos`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`contactos`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`contactos`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'clientes'; 
+/*[05:08:17 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`clientes`; 
+/*[05:08:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`clientes`; 
+/*[05:08:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`clientes`; 
+/*[05:08:49 a. m.][218 ms]*/ ALTER TABLE `proyecto`.`productos` DROP COLUMN `tipo_producto_id`, DROP INDEX `tipo_producto_id`; 
+/*[05:08:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[05:08:51 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[05:08:51 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[05:08:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[05:08:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[05:08:51 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:08:51 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[05:09:56 a. m.][320 ms]*/ CREATE TABLE `detalle_producto` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `producto_id` INT(11) NOT NULL, `color_id` INT(11) NOT NULL, `talla_id` INT(11) NOT NULL, `tela_id` INT(11) NOT NULL, `diseno_id` INT(11) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`), FOREIGN KEY (`color_id`) REFERENCES `colores` (`id`), FOREIGN KEY (`talla_id`) REFERENCES `tallas` (`id`), FOREIGN KEY (`tela_id`) REFERENCES `telas` (`id`), FOREIGN KEY (`diseno_id`) REFERENCES `disenos` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:10:43 a. m.][0 ms]*/ CREATE TABLE `detalle_producto` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `producto_id` INT(11) NOT NULL, `color_id` INT(11) NOT NULL, `talla_id` INT(11) NOT NULL, `tela_id` INT(11) NOT NULL, `diseno_id` INT(11) NOT NULL, PRIMARY KEY (`id`), ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:12:34 a. m.][623 ms]*/ CREATE TABLE `productos_variantes` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `producto_id` INT(11) NOT NULL, `color_id` INT(11) NOT NULL, `talla_id` INT(11) NOT NULL, `tela_id` INT(11) NOT NULL, `diseno_id` INT(11) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`), FOREIGN KEY (`color_id`) REFERENCES `colores` (`id`), FOREIGN KEY (`talla_id`) REFERENCES `tallas` (`id`), FOREIGN KEY (`tela_id`) REFERENCES `telas` (`id`), FOREIGN KEY (`diseno_id`) REFERENCES `disenos` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:13:08 a. m.][210 ms]*/ CREATE TABLE `detalle_producto` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `producto_id` INT(11) NOT NULL, `color_id` INT(11) NOT NULL, `talla_id` INT(11) NOT NULL, `tela_id` INT(11) NOT NULL, `diseno_id` INT(11) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`), FOREIGN KEY (`color_id`) REFERENCES `colores` (`id`), FOREIGN KEY (`talla_id`) REFERENCES `tallas` (`id`), FOREIGN KEY (`tela_id`) REFERENCES `telas` (`id`), FOREIGN KEY (`diseno_id`) REFERENCES `disenos` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:13:25 a. m.][0 ms]*/ CREATE TABLE `detalle_producto` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `producto_id` INT(11) NOT NULL, `color_id` INT(11) NOT NULL, `talla_id` INT(11) NOT NULL, `tela_id` INT(11) NOT NULL, `diseno_id` INT(11) NOT NULL ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:13:57 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[05:14:39 a. m.][653 ms]*/ CREATE TABLE `disenos` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(50) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:15:00 a. m.][321 ms]*/ CREATE TABLE `detalle_producto` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `producto_id` INT(11) NOT NULL, `color_id` INT(11) NOT NULL, `talla_id` INT(11) NOT NULL, `tela_id` INT(11) NOT NULL, `diseno_id` INT(11) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`), FOREIGN KEY (`color_id`) REFERENCES `colores` (`id`), FOREIGN KEY (`talla_id`) REFERENCES `tallas` (`id`), FOREIGN KEY (`tela_id`) REFERENCES `telas` (`id`), FOREIGN KEY (`diseno_id`) REFERENCES `disenos` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:15:02 a. m.][273 ms]*/ CREATE TABLE `detalle_producto` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `producto_id` INT(11) NOT NULL, `color_id` INT(11) NOT NULL, `talla_id` INT(11) NOT NULL, `tela_id` INT(11) NOT NULL, `diseno_id` INT(11) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`), FOREIGN KEY (`color_id`) REFERENCES `colores` (`id`), FOREIGN KEY (`talla_id`) REFERENCES `tallas` (`id`), FOREIGN KEY (`tela_id`) REFERENCES `telas` (`id`), FOREIGN KEY (`diseno_id`) REFERENCES `disenos` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:15:04 a. m.][1589 ms]*/ CREATE TABLE `detalle_producto` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `producto_id` INT(11) NOT NULL, `color_id` INT(11) NOT NULL, `talla_id` INT(11) NOT NULL, `tela_id` INT(11) NOT NULL, `diseno_id` INT(11) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`), FOREIGN KEY (`color_id`) REFERENCES `colores` (`id`), FOREIGN KEY (`talla_id`) REFERENCES `tallas` (`id`), FOREIGN KEY (`tela_id`) REFERENCES `telas` (`id`), FOREIGN KEY (`diseno_id`) REFERENCES `disenos` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:15:27 a. m.][307 ms]*/ CREATE TABLE `detalle_producto` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `producto_id` INT(11) NOT NULL, `color_id` INT(11) NOT NULL, `talla_id` INT(11) NOT NULL, `tela_id` INT(11) NOT NULL, `diseno_id` INT(11) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`), FOREIGN KEY (`color_id`) REFERENCES `colores` (`id`), FOREIGN KEY (`talla_id`) REFERENCES `tallas` (`id`), FOREIGN KEY (`tela_id`) REFERENCES `telas` (`id`), FOREIGN KEY (`diseno_id`) REFERENCES `disenos` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:15:29 a. m.][330 ms]*/ CREATE TABLE `detalle_producto` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `producto_id` INT(11) NOT NULL, `color_id` INT(11) NOT NULL, `talla_id` INT(11) NOT NULL, `tela_id` INT(11) NOT NULL, `diseno_id` INT(11) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`), FOREIGN KEY (`color_id`) REFERENCES `colores` (`id`), FOREIGN KEY (`talla_id`) REFERENCES `tallas` (`id`), FOREIGN KEY (`tela_id`) REFERENCES `telas` (`id`), FOREIGN KEY (`diseno_id`) REFERENCES `disenos` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:15:30 a. m.][302 ms]*/ CREATE TABLE `detalle_producto` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `producto_id` INT(11) NOT NULL, `color_id` INT(11) NOT NULL, `talla_id` INT(11) NOT NULL, `tela_id` INT(11) NOT NULL, `diseno_id` INT(11) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`), FOREIGN KEY (`color_id`) REFERENCES `colores` (`id`), FOREIGN KEY (`talla_id`) REFERENCES `tallas` (`id`), FOREIGN KEY (`tela_id`) REFERENCES `telas` (`id`), FOREIGN KEY (`diseno_id`) REFERENCES `disenos` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:15:30 a. m.][212 ms]*/ CREATE TABLE `detalle_producto` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `producto_id` INT(11) NOT NULL, `color_id` INT(11) NOT NULL, `talla_id` INT(11) NOT NULL, `tela_id` INT(11) NOT NULL, `diseno_id` INT(11) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`), FOREIGN KEY (`color_id`) REFERENCES `colores` (`id`), FOREIGN KEY (`talla_id`) REFERENCES `tallas` (`id`), FOREIGN KEY (`tela_id`) REFERENCES `telas` (`id`), FOREIGN KEY (`diseno_id`) REFERENCES `disenos` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:15:48 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[05:15:59 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:16:00 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:16:02 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:16:02 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:16:02 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:17:08 a. m.][270 ms]*/ CREATE TABLE `proyecto`.`detalle_producto`( `id` INT NOT NULL AUTO_INCREMENT, `producto_id` INT(11) NOT NULL, `color_id` INT(11) NOT NULL, `talla_id` INT(11) NOT NULL, `diseno_id` INT(11) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci; 
+/*[05:17:11 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[05:17:11 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[05:17:11 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_producto'; 
+/*[05:17:11 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[05:17:11 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_producto`; 
+/*[05:17:11 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[05:17:11 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_producto`; 
+/*[05:17:11 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:17:37 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[05:17:43 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[05:17:43 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[05:17:45 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[05:17:47 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`colores`; 
+/*[05:17:47 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`colores`; 
+/*[05:17:48 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[05:17:52 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tallas`; 
+/*[05:17:52 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tallas`; 
+/*[05:17:53 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[05:17:57 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`disenos`; 
+/*[05:17:57 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`disenos`; 
+/*[05:18:01 a. m.][1548 ms]*/ ALTER TABLE `proyecto`.`detalle_producto` ADD FOREIGN KEY (`producto_id`) REFERENCES `proyecto`.`productos`(`id`), ADD FOREIGN KEY (`color_id`) REFERENCES `proyecto`.`colores`(`id`), ADD FOREIGN KEY (`talla_id`) REFERENCES `proyecto`.`tallas`(`id`), ADD FOREIGN KEY (`diseno_id`) REFERENCES `proyecto`.`disenos`(`id`); 
+/*[05:18:03 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_producto'; 
+/*[05:18:03 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[05:18:04 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_producto`; 
+/*[05:18:04 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[05:18:04 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_producto`; 
+/*[05:18:04 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[05:18:04 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[05:18:04 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`colores`; 
+/*[05:18:04 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`colores`; 
+/*[05:18:04 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tallas`; 
+/*[05:18:04 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tallas`; 
+/*[05:18:04 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`disenos`; 
+/*[05:18:04 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`disenos`; 
+/*[05:18:04 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:18:04 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[05:18:09 a. m.][0 ms]*/ USE `proyecto`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[05:18:09 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[05:18:09 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[05:18:09 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[05:18:09 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[05:18:09 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[05:18:09 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[05:18:09 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[05:18:09 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[05:18:09 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[05:18:09 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[05:18:09 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[05:18:09 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[05:18:09 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[05:18:09 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[05:18:09 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[05:18:09 a. m.][63 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[05:18:09 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[05:18:09 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[05:18:09 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[05:18:09 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[05:18:10 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[05:18:10 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[05:18:10 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[05:18:10 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_notificacion'; 
+/*[05:18:10 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'categorias_configuracion'; 
+/*[05:18:10 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[05:18:10 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[05:18:10 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[05:18:10 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles'; 
+/*[05:18:10 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[05:18:10 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[05:18:10 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'historial_contrasenas'; 
+/*[05:18:10 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`historial_contrasenas`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`historial_contrasenas`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registros_cambio_contrasena'; 
+/*[05:18:10 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registros_cambio_contrasena`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'contactos'; 
+/*[05:18:10 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`contactos`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`contactos`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`contactos`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'clientes'; 
+/*[05:18:10 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`clientes`; 
+/*[05:18:10 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`clientes`; 
+/*[05:18:10 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`clientes`; 
+/*[05:18:26 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[05:18:26 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[05:18:26 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[05:18:26 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[05:18:26 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[05:18:26 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[05:18:26 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[05:18:26 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:19:05 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'colores'; 
+/*[05:19:05 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`colores`; 
+/*[05:19:05 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`colores`; 
+/*[05:19:14 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_producto'; 
+/*[05:19:14 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_producto`; 
+/*[05:19:14 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[05:19:14 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_producto`; 
+/*[05:19:14 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`colores`; 
+/*[05:21:24 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'disenos'; 
+/*[05:21:24 a. m.][13 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`disenos`; 
+/*[05:21:24 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`disenos`; 
+/*[05:21:24 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`disenos`; 
+/*[05:21:30 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tallas'; 
+/*[05:21:30 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tallas`; 
+/*[05:21:31 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tallas`; 
+/*[05:21:31 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tallas`; 
+/*[05:22:11 a. m.][0 ms]*/ USE `proyecto`; 
+/*[05:22:11 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[05:22:11 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[05:22:11 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[05:22:11 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[05:22:11 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[05:22:11 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[05:22:11 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[05:22:11 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[05:22:11 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[05:22:11 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[05:22:11 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[05:22:11 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[05:22:11 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[05:22:11 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[05:22:11 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[05:22:11 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[05:22:11 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[05:22:11 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[05:22:11 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[05:22:11 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[05:22:11 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[05:22:11 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[05:22:12 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[05:22:12 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_notificacion'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'categorias_configuracion'; 
+/*[05:22:12 a. m.][64 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[05:22:12 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'historial_contrasenas'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`historial_contrasenas`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`historial_contrasenas`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registros_cambio_contrasena'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registros_cambio_contrasena`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'contactos'; 
+/*[05:22:12 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`contactos`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`contactos`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`contactos`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'clientes'; 
+/*[05:22:12 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`clientes`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`clientes`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`clientes`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'colores'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`colores`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`colores`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_producto'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_producto`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_producto`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`colores`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'disenos'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`disenos`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`disenos`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`disenos`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tallas'; 
+/*[05:22:12 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tallas`; 
+/*[05:22:12 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tallas`; 
+/*[05:22:12 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tallas`; 
+/*[05:22:41 a. m.][272 ms]*/ CREATE TABLE `telas` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(50) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:23:17 a. m.][719 ms]*/ ALTER TABLE `proyecto`.`detalle_producto` ADD COLUMN `tela_id` INT(11) NOT NULL AFTER `diseno_id`; 
+/*[05:23:19 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_producto'; 
+/*[05:23:19 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[05:23:19 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_producto`; 
+/*[05:23:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[05:23:19 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_producto`; 
+/*[05:23:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[05:23:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[05:23:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`colores`; 
+/*[05:23:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`colores`; 
+/*[05:23:19 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`tallas`; 
+/*[05:23:19 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tallas`; 
+/*[05:23:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`disenos`; 
+/*[05:23:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`disenos`; 
+/*[05:23:19 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:23:19 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[05:23:26 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[05:23:28 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`telas`; 
+/*[05:23:28 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`telas`; 
+/*[05:23:31 a. m.][799 ms]*/ ALTER TABLE `proyecto`.`detalle_producto` ADD FOREIGN KEY (`tela_id`) REFERENCES `proyecto`.`telas`(`id`); 
+/*[05:23:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_producto'; 
+/*[05:23:33 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[05:23:33 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_producto`; 
+/*[05:23:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[05:23:33 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_producto`; 
+/*[05:23:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[05:23:33 a. m.][4 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[05:23:33 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`colores`; 
+/*[05:23:33 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`colores`; 
+/*[05:23:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tallas`; 
+/*[05:23:33 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tallas`; 
+/*[05:23:33 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`disenos`; 
+/*[05:23:33 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`disenos`; 
+/*[05:23:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`telas`; 
+/*[05:23:33 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`telas`; 
+/*[05:23:33 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:23:33 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[05:23:50 a. m.][0 ms]*/ USE `proyecto`; 
+/*[05:23:50 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[05:23:50 a. m.][15 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[05:23:50 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[05:23:50 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[05:23:50 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[05:23:50 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[05:23:50 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[05:23:51 a. m.][81 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[05:23:51 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_notificacion'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'categorias_configuracion'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[05:23:51 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'historial_contrasenas'; 
+/*[05:23:51 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`historial_contrasenas`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`historial_contrasenas`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registros_cambio_contrasena'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registros_cambio_contrasena`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'contactos'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`contactos`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`contactos`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`contactos`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'clientes'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`clientes`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`clientes`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`clientes`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'colores'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`colores`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`colores`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_producto'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_producto`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_producto`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`colores`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'disenos'; 
+/*[05:23:51 a. m.][18 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`disenos`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`disenos`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`disenos`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tallas'; 
+/*[05:23:51 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tallas`; 
+/*[05:23:51 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tallas`; 
+/*[05:23:51 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tallas`; 
+/*[05:23:53 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'telas'; 
+/*[05:23:53 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`telas`; 
+/*[05:23:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`telas`; 
+/*[05:23:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`telas`; 
+/*[05:30:29 a. m.][317 ms]*/ CREATE TABLE `comentarios` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `usuario_id` INT(11) NOT NULL, `producto_id` INT(11) NOT NULL, `texto` TEXT NOT NULL, `fecha_hora` DATETIME NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`), FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:30:56 a. m.][569 ms]*/ CREATE TABLE `valoraciones` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `usuario_id` INT(11) NOT NULL, `producto_id` INT(11) NOT NULL, `calificacion` INT(11) NOT NULL, `fecha_hora` DATETIME NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`), FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:37:04 a. m.][537 ms]*/ CREATE TABLE `cadeterias` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(100) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:37:23 a. m.][359 ms]*/ CREATE TABLE `envios` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `fecha_envio` DATETIME NOT NULL, `direccion_entrega` TEXT NOT NULL, `cliente_id` INT(11) NOT NULL, `cadeteria_id` INT(11), `estado` VARCHAR(50) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`), FOREIGN KEY (`cadeteria_id`) REFERENCES `cadeterias` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:41:27 a. m.][333 ms]*/ CREATE TABLE `promociones` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `nombre` VARCHAR(100) NOT NULL, `descripcion` TEXT, `fecha_inicio` DATE NOT NULL, `fecha_fin` DATE NOT NULL, `descuento` DECIMAL(10, 2) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:41:40 a. m.][335 ms]*/ CREATE TABLE `productos_promocionados` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `producto_id` INT(11) NOT NULL, `promocion_id` INT(11) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`), FOREIGN KEY (`promocion_id`) REFERENCES `promociones` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:41:54 a. m.][357 ms]*/ CREATE TABLE `usuarios_descuentos` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `usuario_id` INT(11) NOT NULL, `promocion_id` INT(11) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`), FOREIGN KEY (`promocion_id`) REFERENCES `promociones` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:48:04 a. m.][0 ms]*/ SELECT * FROM `proyecto`.`productos` LIMIT 0, 1000; 
+/*[05:48:04 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[05:48:05 a. m.][261 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[05:48:05 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[05:48:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[05:48:18 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[05:48:18 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[05:48:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[05:48:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[05:48:18 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:57:14 a. m.][558 ms]*/ CREATE TABLE `transacciones_pago` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `usuario_id` INT(11) NOT NULL, `tipo_pago` VARCHAR(50) NOT NULL, `monto` DECIMAL(10, 2) NOT NULL, `fecha_hora` DATETIME NOT NULL, `comprobante` VARCHAR(255), `datos_operacion` TEXT, PRIMARY KEY (`id`), FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:57:31 a. m.][399 ms]*/ CREATE TABLE `transacciones_detalle_pedido` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `transaccion_pago_id` INT(11) NOT NULL, `detalle_pedido_id` INT(11) NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`transaccion_pago_id`) REFERENCES `transacciones_pago` (`id`), FOREIGN KEY (`detalle_pedido_id`) REFERENCES `detalle_pedido` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[05:58:24 a. m.][1124 ms]*/ ALTER TABLE `proyecto`.`detalle_pedido` CHANGE `informacion_pago` `informacion_pago` INT(11) NOT NULL; 
+/*[05:58:27 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[05:58:27 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[05:58:27 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[05:58:27 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[05:58:27 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[05:58:27 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[05:58:27 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[05:58:27 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[05:58:27 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[05:58:27 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[05:58:27 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[05:58:32 a. m.][0 ms]*/ USE `proyecto`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[05:58:32 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[05:58:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[05:58:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[05:58:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[05:58:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[05:58:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[05:58:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[05:58:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[05:58:32 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[05:58:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[05:58:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[05:58:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[05:58:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[05:58:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[05:58:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[05:58:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[05:58:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[05:58:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[05:58:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[05:58:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[05:58:32 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[05:58:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[05:58:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[05:58:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[05:58:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[05:58:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[05:58:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[05:58:32 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[05:58:32 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_notificacion'; 
+/*[05:58:32 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'categorias_configuracion'; 
+/*[05:58:33 a. m.][13 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[05:58:33 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[05:58:33 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[05:58:33 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles'; 
+/*[05:58:33 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[05:58:33 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[05:58:33 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'historial_contrasenas'; 
+/*[05:58:33 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`historial_contrasenas`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`historial_contrasenas`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registros_cambio_contrasena'; 
+/*[05:58:33 a. m.][46 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registros_cambio_contrasena`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'contactos'; 
+/*[05:58:33 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`contactos`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`contactos`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`contactos`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'clientes'; 
+/*[05:58:33 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`clientes`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`clientes`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`clientes`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'colores'; 
+/*[05:58:33 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`colores`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`colores`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_producto'; 
+/*[05:58:33 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_producto`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_producto`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`colores`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'disenos'; 
+/*[05:58:33 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`disenos`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`disenos`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`disenos`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tallas'; 
+/*[05:58:33 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tallas`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tallas`; 
+/*[05:58:33 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tallas`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'telas'; 
+/*[05:58:33 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`telas`; 
+/*[05:58:33 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`telas`; 
+/*[05:58:33 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`telas`; 
+/*[05:58:42 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'cadeterias'; 
+/*[05:58:42 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`cadeterias`; 
+/*[05:58:42 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`cadeterias`; 
+/*[05:58:48 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'comentarios'; 
+/*[05:58:48 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`comentarios`; 
+/*[05:58:48 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`comentarios`; 
+/*[05:58:48 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`comentarios`; 
+/*[05:59:39 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'envios'; 
+/*[05:59:39 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`envios`; 
+/*[05:59:40 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`envios`; 
+/*[05:59:40 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`envios`; 
+/*[05:59:40 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`cadeterias`; 
+/*[06:17:48 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[06:17:48 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[06:17:48 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[06:17:48 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[06:17:48 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[06:17:48 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[06:17:48 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[06:17:48 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[06:17:48 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[06:17:48 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[06:19:23 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[06:19:23 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[06:19:23 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[06:19:23 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[06:19:23 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[06:19:23 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[06:19:23 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[06:19:23 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[06:19:23 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[06:19:23 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[06:20:04 a. m.][411 ms]*/ ALTER TABLE `proyecto`.`pedidos` ADD COLUMN `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL AFTER `cantidad`, ADD COLUMN `fecha_modificacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL AFTER `fecha_creacion`; 
+/*[06:20:05 a. m.][1 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[06:20:05 a. m.][0 ms]*/ USE `proyecto`; 
+/*[06:20:05 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[06:20:05 a. m.][62 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[06:20:05 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[06:20:05 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[06:20:05 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[06:20:05 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[06:20:05 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[06:20:05 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[06:20:05 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[06:20:05 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[06:20:05 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[06:20:05 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[06:20:05 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[06:20:05 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[06:20:05 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[06:20:05 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[06:20:05 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[06:20:05 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[06:20:05 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[06:20:05 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[06:20:05 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[06:20:05 a. m.][17 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[06:20:05 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[06:20:05 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[06:20:06 a. m.][24 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[06:20:06 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_notificacion'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'categorias_configuracion'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'historial_contrasenas'; 
+/*[06:20:06 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`historial_contrasenas`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`historial_contrasenas`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registros_cambio_contrasena'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registros_cambio_contrasena`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'contactos'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`contactos`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`contactos`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`contactos`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'clientes'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`clientes`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`clientes`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`clientes`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'colores'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`colores`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`colores`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_producto'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_producto`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_producto`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`colores`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'disenos'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`disenos`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`disenos`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`disenos`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tallas'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tallas`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tallas`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tallas`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'telas'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`telas`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`telas`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`telas`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'cadeterias'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`cadeterias`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`cadeterias`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'comentarios'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`comentarios`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`comentarios`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`comentarios`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'envios'; 
+/*[06:20:06 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`envios`; 
+/*[06:20:06 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`envios`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`envios`; 
+/*[06:20:06 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`cadeterias`; 
+/*[06:20:30 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[06:20:30 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[06:20:30 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[06:20:30 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[06:20:30 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[06:20:30 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[06:21:17 a. m.][159 ms]*/ ALTER TABLE `proyecto`.`productos` ADD COLUMN `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL AFTER `tiempo_confeccion_horas`, ADD COLUMN `fecha_modificacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL AFTER `fecha_creacion`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[06:21:18 a. m.][0 ms]*/ USE `proyecto`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[06:21:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[06:21:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[06:21:18 a. m.][13 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[06:21:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[06:21:18 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[06:21:18 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[06:21:18 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[06:21:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[06:21:18 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[06:21:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[06:21:18 a. m.][4 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[06:21:18 a. m.][3 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[06:21:18 a. m.][3 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[06:21:18 a. m.][4 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[06:21:18 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[06:21:18 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[06:21:18 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[06:21:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[06:21:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_notificacion'; 
+/*[06:21:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'categorias_configuracion'; 
+/*[06:21:18 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[06:21:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[06:21:18 a. m.][4 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[06:21:18 a. m.][5 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles'; 
+/*[06:21:18 a. m.][20 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[06:21:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[06:21:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[06:21:19 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[06:21:19 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[06:21:19 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[06:21:19 a. m.][3 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'historial_contrasenas'; 
+/*[06:21:19 a. m.][4 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`historial_contrasenas`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`historial_contrasenas`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registros_cambio_contrasena'; 
+/*[06:21:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registros_cambio_contrasena`; 
+/*[06:21:19 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[06:21:19 a. m.][2 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'contactos'; 
+/*[06:21:19 a. m.][8 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`contactos`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`contactos`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`contactos`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'clientes'; 
+/*[06:21:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`clientes`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`clientes`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`clientes`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'colores'; 
+/*[06:21:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`colores`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`colores`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_producto'; 
+/*[06:21:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_producto`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_producto`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`colores`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'disenos'; 
+/*[06:21:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`disenos`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`disenos`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`disenos`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tallas'; 
+/*[06:21:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tallas`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tallas`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tallas`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'telas'; 
+/*[06:21:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`telas`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`telas`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`telas`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'cadeterias'; 
+/*[06:21:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`cadeterias`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`cadeterias`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'comentarios'; 
+/*[06:21:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`comentarios`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`comentarios`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`comentarios`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'envios'; 
+/*[06:21:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`envios`; 
+/*[06:21:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`envios`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`envios`; 
+/*[06:21:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`cadeterias`; 
+/*[06:21:29 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[06:21:29 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[06:21:29 a. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[06:21:29 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[06:21:29 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[06:21:29 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[06:21:29 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[06:21:29 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[06:21:29 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[06:21:29 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[06:22:15 a. m.][402 ms]*/ ALTER TABLE `proyecto`.`detalle_pedido` CHANGE `fecha_pedido` `fecha_creacion_pedido` DATETIME DEFAULT CURRENT_TIMESTAMP() NOT NULL, ADD COLUMN `fecha_modificacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL AFTER `informacion_pago`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[06:22:16 a. m.][0 ms]*/ USE `proyecto`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_notificacion'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'categorias_configuracion'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[06:22:16 a. m.][45 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'historial_contrasenas'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`historial_contrasenas`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`historial_contrasenas`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registros_cambio_contrasena'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registros_cambio_contrasena`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'contactos'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`contactos`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`contactos`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`contactos`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'clientes'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`clientes`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`clientes`; 
+/*[06:22:16 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`clientes`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'colores'; 
+/*[06:22:16 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`colores`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`colores`; 
+/*[06:22:16 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_producto'; 
+/*[06:22:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_producto`; 
+/*[06:22:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[06:22:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_producto`; 
+/*[06:22:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`colores`; 
+/*[06:22:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'disenos'; 
+/*[06:22:17 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`disenos`; 
+/*[06:22:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`disenos`; 
+/*[06:22:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`disenos`; 
+/*[06:22:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tallas'; 
+/*[06:22:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tallas`; 
+/*[06:22:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tallas`; 
+/*[06:22:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tallas`; 
+/*[06:22:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'telas'; 
+/*[06:22:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`telas`; 
+/*[06:22:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`telas`; 
+/*[06:22:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`telas`; 
+/*[06:22:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'cadeterias'; 
+/*[06:22:17 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`cadeterias`; 
+/*[06:22:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`cadeterias`; 
+/*[06:22:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'comentarios'; 
+/*[06:22:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`comentarios`; 
+/*[06:22:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`comentarios`; 
+/*[06:22:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`comentarios`; 
+/*[06:22:17 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'envios'; 
+/*[06:22:17 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`envios`; 
+/*[06:22:17 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`envios`; 
+/*[06:22:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`envios`; 
+/*[06:22:17 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`cadeterias`; 
+/*[06:22:25 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'comentarios'; 
+/*[06:22:25 a. m.][0 ms]*/ SHOW CHARSET; 
+/*[06:22:25 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`comentarios`; 
+/*[06:22:25 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`comentarios`; 
+/*[06:22:25 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`comentarios`; 
+/*[06:22:25 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[06:22:25 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[06:22:25 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[06:22:25 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[06:22:25 a. m.][0 ms]*/ SHOW COLLATION; 
+/*[06:22:52 a. m.][156 ms]*/ ALTER TABLE `proyecto`.`comentarios` ADD COLUMN `fecha_modificacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL AFTER `fecha_hora`; 
+/*[06:22:53 a. m.][1 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[06:22:53 a. m.][0 ms]*/ USE `proyecto`; 
+/*[06:22:53 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[06:22:53 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[06:22:53 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[06:22:54 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[06:22:54 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[06:22:54 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_notificacion'; 
+/*[06:22:54 a. m.][28 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'categorias_configuracion'; 
+/*[06:22:54 a. m.][7 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[06:22:54 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[06:22:54 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'historial_contrasenas'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`historial_contrasenas`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`historial_contrasenas`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registros_cambio_contrasena'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registros_cambio_contrasena`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'contactos'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`contactos`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`contactos`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`contactos`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'clientes'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`clientes`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`clientes`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`clientes`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'colores'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`colores`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`colores`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_producto'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_producto`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_producto`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`colores`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'disenos'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`disenos`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`disenos`; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`disenos`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tallas'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tallas`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tallas`; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`tallas`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'telas'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`telas`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`telas`; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`telas`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'cadeterias'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`cadeterias`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`cadeterias`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'comentarios'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`comentarios`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`comentarios`; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`comentarios`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'envios'; 
+/*[06:22:54 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`envios`; 
+/*[06:22:54 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`envios`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`envios`; 
+/*[06:22:54 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`cadeterias`; 
+/*[06:24:48 a. m.][0 ms]*/ SELECT * FROM `proyecto`.`comentarios` LIMIT 0, 1000; 
+/*[06:24:48 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`comentarios`; 
+/*[06:24:48 a. m.][13 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`comentarios`; 
+/*[06:24:48 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`comentarios`; 
+/*[06:24:54 a. m.][598 ms]*/ CREATE TABLE `tickets_soporte` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `usuario_id` INT(11) NOT NULL, `asunto` VARCHAR(255) NOT NULL, `descripcion` TEXT NOT NULL, `estado` VARCHAR(50) NOT NULL, `fecha_creacion` DATETIME NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[06:25:07 a. m.][318 ms]*/ CREATE TABLE `interacciones_soporte` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `ticket_id` INT(11) NOT NULL, `agente_soporte_id` INT(11) NOT NULL, `mensaje` TEXT NOT NULL, `fecha_hora` DATETIME NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`ticket_id`) REFERENCES `tickets_soporte` (`id`), FOREIGN KEY (`agente_soporte_id`) REFERENCES `usuarios` (`id`) ) ENGINE=INNODB DEFAULT CHARSET=utf8; 
+/*[06:25:18 a. m.][0 ms]*/ USE `proyecto`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'consultas'; 
+/*[06:25:18 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`consultas`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_pedido'; 
+/*[06:25:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_pedido`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'jerarquia_usuarios'; 
+/*[06:25:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios'; 
+/*[06:25:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[06:25:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`consultas`; 
+/*[06:25:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[06:25:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_pedido`; 
+/*[06:25:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`jerarquia_usuarios`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_usuarios'; 
+/*[06:25:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_usuarios`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[06:25:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_usuarios`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles_permisos'; 
+/*[06:25:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles_permisos`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_usuario'; 
+/*[06:25:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_usuario`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[06:25:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_usuario`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos'; 
+/*[06:25:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[06:25:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'permisos'; 
+/*[06:25:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`permisos`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[06:25:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles_permisos`; 
+/*[06:25:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`permisos`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'pedidos'; 
+/*[06:25:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`pedidos`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[06:25:18 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`pedidos`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_accion'; 
+/*[06:25:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_accion`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[06:25:18 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_actividad'; 
+/*[06:25:18 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_actividad`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registro_actividad`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_accion`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones'; 
+/*[06:25:19 a. m.][9 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'notificaciones_tipo'; 
+/*[06:25:19 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`notificaciones_tipo`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`notificaciones_tipo`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tipo_notificacion'; 
+/*[06:25:19 a. m.][70 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tipo_notificacion`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tipo_notificacion`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'categorias_configuracion'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`categorias_configuracion`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_categoria'; 
+/*[06:25:19 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_categoria`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_categoria`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`categorias_configuracion`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_permiso'; 
+/*[06:25:19 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_permiso`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_permiso`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_rol'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_rol`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'roles'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`roles`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`roles`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_rol`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_sistema'; 
+/*[06:25:19 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_sistema`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_sistema`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'configuracion_usuario'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`configuracion_usuario`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`configuracion_usuario`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'historial_contrasenas'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`historial_contrasenas`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`historial_contrasenas`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registros_cambio_contrasena'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registros_cambio_contrasena`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`registros_cambio_contrasena`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'contactos'; 
+/*[06:25:19 a. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`contactos`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`contactos`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`contactos`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'clientes'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`clientes`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`clientes`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`clientes`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'colores'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`colores`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`colores`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'detalle_producto'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`detalle_producto`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`detalle_producto`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`colores`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'disenos'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`disenos`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`disenos`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`disenos`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tallas'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tallas`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tallas`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tallas`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'telas'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`telas`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`telas`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`telas`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'cadeterias'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`cadeterias`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`cadeterias`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'comentarios'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`comentarios`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`comentarios`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`comentarios`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'envios'; 
+/*[06:25:19 a. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`envios`; 
+/*[06:25:19 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`envios`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`envios`; 
+/*[06:25:19 a. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`cadeterias`; 
+/*[06:25:41 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'valoraciones'; 
+/*[06:25:41 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`valoraciones`; 
+/*[06:25:41 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`valoraciones`; 
+/*[06:25:41 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`valoraciones`; 
+/*[06:26:13 a. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'transacciones_detalle_pedido'; 
+/*[06:26:13 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`transacciones_detalle_pedido`; 
+/*[06:26:14 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`transacciones_detalle_pedido`; 
+/*[06:26:14 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`transacciones_detalle_pedido`; 
+/*[06:26:49 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'usuarios_descuentos'; 
+/*[06:26:49 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios_descuentos`; 
+/*[06:26:49 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios_descuentos`; 
+/*[06:26:49 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios_descuentos`; 
+/*[06:27:13 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'transacciones_pago'; 
+/*[06:27:13 a. m.][16 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`transacciones_pago`; 
+/*[06:27:13 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`transacciones_pago`; 
+/*[06:27:13 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`transacciones_pago`; 
+/*[06:28:14 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_errores'; 
+/*[06:28:14 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_errores`; 
+/*[06:28:14 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_errores`; 
+/*[06:28:14 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`registro_errores`; 
+/*[06:28:36 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'promociones'; 
+/*[06:28:36 a. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`promociones`; 
+/*[06:28:36 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`promociones`; 
+/*[06:28:36 a. m.][3 ms]*/ SHOW KEYS FROM `proyecto`.`promociones`; 
+/*[06:28:53 a. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'productos_promocionados'; 
+/*[06:28:53 a. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos_promocionados`; 
+/*[06:28:53 a. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos_promocionados`; 
+/*[06:28:53 a. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`productos_promocionados`; 
+/*[06:37:53 a. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[06:37:53 a. m.][0 ms]*/ SELECT `TABLE_NAME` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = 'proyecto' AND `TABLE_TYPE` = 'VIEW'; 
+/*[06:37:53 a. m.][10 ms]*/ SELECT `SPECIFIC_NAME` FROM `INFORMATION_SCHEMA`.`ROUTINES` WHERE `ROUTINE_SCHEMA` = 'proyecto' AND ROUTINE_TYPE = 'PROCEDURE'; 
+/*[06:37:53 a. m.][2 ms]*/ SELECT `SPECIFIC_NAME` FROM `INFORMATION_SCHEMA`.`ROUTINES` WHERE `ROUTINE_SCHEMA` = 'proyecto'AND ROUTINE_TYPE = 'FUNCTION'; 
+/*[06:37:53 a. m.][10 ms]*/ SHOW TRIGGERS FROM `proyecto`; 
+/*[06:37:53 a. m.][12 ms]*/ SELECT `EVENT_NAME` FROM `INFORMATION_SCHEMA`.`EVENTS` WHERE `EVENT_SCHEMA` = 'proyecto' ORDER BY EVENT_NAME; 
+/*[01:24:40 p. m.][0 ms]*/ SHOW DATABASES; 
+/*[01:37:53 p. m.][1 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[01:37:58 p. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_errores'; 
+/*[01:37:58 p. m.][0 ms]*/ SHOW CHARSET; 
+/*[01:37:58 p. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_errores`; 
+/*[01:37:58 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_errores`; 
+/*[01:37:58 p. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`registro_errores`; 
+/*[01:37:58 p. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[01:37:58 p. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[01:37:58 p. m.][2 ms]*/ SHOW COLLATION; 
+/*[01:38:46 p. m.][402 ms]*/ ALTER TABLE `proyecto`.`registro_errores` CHANGE `fecha_hora` `fecha_hora` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, ADD COLUMN `fecha_modificacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL AFTER `fecha_hora`; 
+/*[01:38:48 p. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'registro_errores'; 
+/*[01:38:48 p. m.][0 ms]*/ SHOW CHARSET; 
+/*[01:38:48 p. m.][10 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`registro_errores`; 
+/*[01:38:48 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_errores`; 
+/*[01:38:48 p. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`registro_errores`; 
+/*[01:38:48 p. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[01:38:48 p. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[01:38:48 p. m.][0 ms]*/ SHOW COLLATION; 
+/*[01:38:48 p. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[01:58:52 p. m.][1 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[01:58:53 p. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[01:59:24 p. m.][0 ms]*/ USE `proyecto`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW VARIABLES LIKE 'character_set_database'; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW VARIABLES LIKE 'collation_database'; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registros_cambio_contrasena`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`contactos`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`clientes`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`colores`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`disenos`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tallas`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`telas`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`cadeterias`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`comentarios`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`envios`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`valoraciones`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`transacciones_detalle_pedido`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios_descuentos`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`transacciones_pago`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_errores`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`promociones`; 
+/*[01:59:24 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos_promocionados`; 
+/*[02:26:29 p. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tickets_soporte'; 
+/*[02:26:29 p. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tickets_soporte`; 
+/*[02:26:30 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tickets_soporte`; 
+/*[02:26:30 p. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`tickets_soporte`; 
+/*[02:27:13 p. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:27:20 p. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tickets_soporte'; 
+/*[02:27:20 p. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:27:20 p. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tickets_soporte`; 
+/*[02:27:20 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tickets_soporte`; 
+/*[02:27:20 p. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tickets_soporte`; 
+/*[02:27:20 p. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:27:20 p. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:27:20 p. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:27:58 p. m.][86 ms]*/ ALTER TABLE `proyecto`.`tickets_soporte` ADD COLUMN `fecha_modificacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL AFTER `fecha_creacion`; 
+/*[02:28:08 p. m.][1 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'tickets_soporte'; 
+/*[02:28:08 p. m.][0 ms]*/ SHOW CHARSET; 
+/*[02:28:08 p. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`tickets_soporte`; 
+/*[02:28:08 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tickets_soporte`; 
+/*[02:28:08 p. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`tickets_soporte`; 
+/*[02:28:08 p. m.][1 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[02:28:08 p. m.][3 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[02:28:08 p. m.][0 ms]*/ SHOW COLLATION; 
+/*[02:28:08 p. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:29:14 p. m.][0 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[02:29:14 p. m.][0 ms]*/ SELECT `TABLE_NAME` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = 'proyecto' AND `TABLE_TYPE` = 'VIEW'; 
+/*[02:29:14 p. m.][10 ms]*/ SELECT `SPECIFIC_NAME` FROM `INFORMATION_SCHEMA`.`ROUTINES` WHERE `ROUTINE_SCHEMA` = 'proyecto' AND ROUTINE_TYPE = 'PROCEDURE'; 
+/*[02:29:14 p. m.][2 ms]*/ SELECT `SPECIFIC_NAME` FROM `INFORMATION_SCHEMA`.`ROUTINES` WHERE `ROUTINE_SCHEMA` = 'proyecto'AND ROUTINE_TYPE = 'FUNCTION'; 
+/*[02:29:14 p. m.][10 ms]*/ SHOW TRIGGERS FROM `proyecto`; 
+/*[02:29:14 p. m.][9 ms]*/ SELECT `EVENT_NAME` FROM `INFORMATION_SCHEMA`.`EVENTS` WHERE `EVENT_SCHEMA` = 'proyecto' ORDER BY EVENT_NAME; 
+/*[02:29:49 p. m.][0 ms]*/ USE `proyecto`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW VARIABLES LIKE 'character_set_database'; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW VARIABLES LIKE 'collation_database'; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`consultas`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_pedido`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`jerarquia_usuarios`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_usuarios`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles_permisos`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_usuario`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`permisos`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`pedidos`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_accion`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_actividad`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`notificaciones_tipo`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tipo_notificacion`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`categorias_configuracion`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_categoria`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_permiso`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_rol`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`roles`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_sistema`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`configuracion_usuario`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`historial_contrasenas`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registros_cambio_contrasena`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`contactos`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`clientes`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`colores`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`detalle_producto`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`disenos`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tallas`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`telas`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`cadeterias`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`comentarios`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`envios`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`valoraciones`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`transacciones_detalle_pedido`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`usuarios_descuentos`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`transacciones_pago`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`registro_errores`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`promociones`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`productos_promocionados`; 
+/*[02:29:49 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`tickets_soporte`; 
+/*[09:36:05 p. m.][4 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'comentarios'; 
+/*[09:36:05 p. m.][0 ms]*/ SHOW CHARSET; 
+/*[09:36:05 p. m.][11 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`comentarios`; 
+/*[09:36:05 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`comentarios`; 
+/*[09:36:05 p. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`comentarios`; 
+/*[09:36:05 p. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`usuarios`; 
+/*[09:36:05 p. m.][2 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`usuarios`; 
+/*[09:36:05 p. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`productos`; 
+/*[09:36:06 p. m.][353 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`productos`; 
+/*[09:36:06 p. m.][0 ms]*/ SHOW COLLATION; 
+/*[09:38:00 p. m.][460 ms]*/ CREATE TABLE `archivos` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `nombre` VARCHAR(255) NOT NULL, `tipo` VARCHAR(100), `tamano` INT, `ubicacion` VARCHAR(255) NOT NULL, `usuario_id` INT NOT NULL, `fecha_subida` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ); 
+/*[09:38:11 p. m.][1 ms]*/ SHOW FULL TABLES FROM `proyecto` WHERE table_type = 'BASE TABLE'; 
+/*[09:38:13 p. m.][0 ms]*/ SHOW TABLE STATUS FROM `proyecto` LIKE 'archivos'; 
+/*[09:38:13 p. m.][12 ms]*/ SHOW FULL FIELDS FROM `proyecto`.`archivos`; 
+/*[09:38:13 p. m.][0 ms]*/ SHOW CREATE TABLE `proyecto`.`archivos`; 
+/*[09:38:13 p. m.][2 ms]*/ SHOW KEYS FROM `proyecto`.`archivos`; 
